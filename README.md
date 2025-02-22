@@ -1,6 +1,8 @@
+
 <p align="center">
-  ![Image](https://github.com/user-attachments/assets/6f38175e-7e92-4b5d-b1f5-022866fc6b24)
+  <img src="https://github.com/user-attachments/assets/3520a425-f8bc-4589-8152-1b92b1ecf2ac" alt="Image">
 </p>
+
 
 
 # EatEase: A Decentralized Eatery Web Platform For Restaurants Featuring Local Eateries (Admin & Business Dashboard)
