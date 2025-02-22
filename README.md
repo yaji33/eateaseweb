@@ -16,7 +16,7 @@ This is the web application for the decentralized eatery platform, built using R
 First, clone the project from your GitHub repository:
 ```sh
 git clone https://github.com/yaji33/eateaseweb.git
-cd eatease
+cd eateaseweb
 cd frontend
 ```
 
