@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/7977ece5-f747-4789-b55e-a34f3ee0d4e0" alt="EatEase">
+  ![Image](https://github.com/user-attachments/assets/c896b2d6-064d-4f5a-b148-129570d412d2)
 </p>
 
 
