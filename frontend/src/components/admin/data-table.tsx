@@ -36,11 +36,6 @@ import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-}
-
 export function DataTable<TData, TValue>({
   columns,
   data,
@@ -79,7 +74,7 @@ export function DataTable<TData, TValue>({
           <Search className="w-5 h-5 text-gray-500" />
           <input
             type="text"
-            placeholder="Search for Customers"
+            placeholder="Search for Eateries"
             value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)

@@ -14,6 +14,9 @@ module.exports = {
         background_active: "#DD0228",
         color_eat: "#A60000",
         color_ease: "#DD0228",
+        primary_btn: "#DD0228",
+        highlight_btn: "#FF4141",
+        border_color: "#DDD7D7",
         foreground: "hsl(var(--foreground))",
         card: {
           DEFAULT: "hsl(var(--card))",

@@ -1,10 +1,11 @@
 import React from "react";
-import "../index.css";
+import "@/index.css";
 import { NavLink } from "react-router-dom";
-import Logo from "../assets/logo.png";
-import Dashboard_logo from "../assets/dashboard.svg";
-import Users_logo from "../assets/user.svg";
-import Eateries_logo from "../assets/eatery.svg";
+import Logo from "@/assets/logo.png";
+import Dashboard_logo from "@/assets/dashboard.svg";
+import Users_logo from "@/assets/user.svg";
+import Eateries_logo from "@/assets/eatery.svg";
+
 
 
 const SideNav = () => {

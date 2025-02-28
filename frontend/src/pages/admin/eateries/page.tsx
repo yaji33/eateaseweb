@@ -3,7 +3,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { EateriesCol, columns } from "./columns";
-import { DataTable } from "./data-table";
+import { DataTable } from "@/components/admin/data-table";
+import { useEateryStore } from "../../../state/modalStore";
+import { Modal } from "@/components/admin/modals";
 
 async function getEateriesData(): Promise<EateriesCol[]> {
   return [
@@ -33,6 +35,7 @@ async function getEateriesData(): Promise<EateriesCol[]> {
 
 export default function Eateries() {
   const [eateriesData, setEateries] = React.useState<EateriesCol[]>([]);
+  const { open, closeModal, eateryId } = useEateryStore();
 
   useEffect(() => {
     async function fetchData() {
@@ -44,6 +47,7 @@ export default function Eateries() {
 
   return (
     <div className="text-black flex flex-col min-h-screen p-5 space-y-5 font-poppins">
+      <Modal open={open} onClose={closeModal} ownerId={eateryId} />
       <Tabs defaultValue="all" className="">
         <TabsList className="gap-3 p-0">
           <TabsTrigger

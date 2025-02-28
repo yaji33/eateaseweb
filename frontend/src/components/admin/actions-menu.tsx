@@ -10,10 +10,31 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
-import { useModalStore } from "./modalStore";
+import {
+  useOwnerStore,
+  useEateryStore,
+  useModalStore,
+} from "@/state/modalStore";
 
-const ActionsMenu = ({ rowData }) => {
+const ActionsMenu = ({ rowData, type }) => {
   const { openModal } = useModalStore();
+  const { setEatery } = useEateryStore();
+  const { setOwner } = useOwnerStore();
+
+  const handleAction = () => {
+    console.log(`Opening modal for ${type}:`, rowData.id, rowData.name);
+
+    setEatery(null, null);
+    setOwner(null, null);
+
+    openModal();
+
+    if (type === "eateries") {
+      setEatery(rowData.id, rowData.name);
+    } else {
+      setOwner(rowData.id, rowData.name);
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -26,13 +47,8 @@ const ActionsMenu = ({ rowData }) => {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => {
-            console.log("Opening modal for user:", rowData.id, rowData.name);
-            openModal(rowData.id, rowData.name);
-          }}
-        >
-          View Business
+        <DropdownMenuItem onClick={handleAction}>
+          {type === "eateries" ? "View Eateries" : "View Business"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
