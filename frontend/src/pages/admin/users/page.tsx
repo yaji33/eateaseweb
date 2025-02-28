@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { DataTable } from "./data-table";
+import { DataTable } from "@/components/admin/data-table";
 import { Payment, columns } from "./columns";
 import { Owner, ownerColumns } from "./owner-column";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useModalStore } from "./modalStore";
-import { Modal } from "./modals";
+import { useOwnerStore } from "../../../state/modalStore";
+import { Modal } from "@/components/admin/modals";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
 
 async function getData(): Promise<Payment[]> {
   return [
@@ -125,7 +124,7 @@ async function getOwnerData(): Promise<Owner[]> {
 export default function Users() {
   const [data, setData] = useState<Payment[]>([]);
   const [ownerData, setOwnerData] = useState<Owner[]>([]);
-  const { open, closeModal, ownerId } = useModalStore();
+  const { open, closeModal, ownerId } = useOwnerStore();
 
   useEffect(() => {
     async function fetchData() {
@@ -137,7 +136,7 @@ export default function Users() {
       setData(paymentResult);
       setOwnerData(ownerResult);
     }
-    fetchData();  
+    fetchData();
   }, []);
 
   return (

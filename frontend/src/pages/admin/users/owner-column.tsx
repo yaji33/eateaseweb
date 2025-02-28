@@ -1,15 +1,13 @@
-import React from 'react'
+import React from "react";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useModalStore } from './modalStore';
+import { useModalStore } from "@/state/modalStore";
 import { ArrowUpDown } from "lucide-react";
 import { z } from "zod";
 import { MoreHorizontal } from "lucide-react";
-import ActionsMenu  from './actions-menu';
-
-
+import ActionsMenu from "@/components/admin/actions-menu";
 
 const Owners = z.object({
   id: z.string(),
@@ -65,11 +63,6 @@ export const ownerColumns: ColumnDef<Owner>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
-      
-      return (
-        <ActionsMenu rowData={row.original}/>
-      );
-    },
+    cell: ({ row }) => <ActionsMenu rowData={row.original} type="owner" />,
   },
 ];

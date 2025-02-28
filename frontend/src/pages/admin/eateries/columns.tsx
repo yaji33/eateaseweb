@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowUpDown } from "lucide-react";
 import { z } from "zod";
 import { MoreHorizontal } from "lucide-react";
-import ActionsMenu from "./actions-menu";
+import ActionsMenu from "@/components/admin/actions-menu";
 
 const EateriesSchema = z.object({
   id: z.string(),
@@ -70,8 +70,6 @@ export const columns: ColumnDef<EateriesCol>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
-      return <ActionsMenu rowData={row.original} />;
-    },
+    cell: ({ row }) => <ActionsMenu rowData={row.original} type="eateries" />,
   },
 ];
