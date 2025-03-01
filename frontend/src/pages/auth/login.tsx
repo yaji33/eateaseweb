@@ -47,7 +47,7 @@ const Login = () => {
       </div>
 
       {/* Login Form */}
-      <div className="w-full max-w-sm sm:max-w-md flex flex-col items-center">
+      <div className="w-full max-w-sm sm:max-w-md flex flex-col items-center sm:text-center">
         <h1 className="font-medium text-lg  my-6">Login to your account</h1>
 
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
@@ -63,7 +63,7 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              autoComplete="email" 
+              autoComplete="email"
             />
 
             <input
@@ -75,7 +75,7 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoComplete="current-password" 
+              autoComplete="current-password"
             />
 
             <button className="mb-6 text-right text-xs text-primary_btn">
@@ -104,11 +104,18 @@ const Login = () => {
         </button>
 
         {/* Terms & Policy */}
-        <p className="text-xs items-center py-3">
+        <p className="text-xs text-center py-3 sm:w-full">
           By continuing you agree to our
-          <span className="text-highlight_btn mx-1">terms of use</span>
+          <span className="text-highlight_btn mx-1 cursor-pointer">
+            {" "}
+            terms of use
+          </span>
           and
-          <span className="text-highlight_btn mx-1">privacy policy</span>.
+          <span className="text-highlight_btn mx-1 cursor-pointer">
+            {" "}
+            privacy policy
+          </span>
+          .
         </p>
 
         {/* Signup Redirect */}
