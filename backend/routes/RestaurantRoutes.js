@@ -1,6 +1,8 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const Restaurant = require("../models/Restaurant");
+const User = require("../models/User");
+const Role = require("../models/Role");
 
 const router = express.Router();
 
@@ -23,11 +25,9 @@ router.post("/", async (req, res) => {
       !address.province ||
       !address.zip
     ) {
-      return res
-        .status(400)
-        .json({
-          error: "Address must include street, city, province, and zip.",
-        });
+      return res.status(400).json({
+        error: "Address must include street, city, province, and zip.",
+      });
     }
 
     if (!operating_hours || !operating_hours.open || !operating_hours.close) {
@@ -43,7 +43,7 @@ router.post("/", async (req, res) => {
       address,
       contact,
       email,
-      password : hashedPassword,
+      password: hashedPassword,
       status: 1,
       restaurant_photo: "",
       operating_hours: {
@@ -53,6 +53,22 @@ router.post("/", async (req, res) => {
     });
 
     const savedRestaurant = await newRestaurant.save();
+
+    const businessRole = await Role.findOne({ id: 3 });
+    if (!businessRole)
+      return res.status(500).json({ error: "Business role not found" });
+
+    // Create a new user for business owner
+    const newUser = new User({
+      owner_name,
+      email,
+      password: hashedPassword,
+      role_id: businessRole.id,
+      business_id: savedRestaurant._id, // Link business ID
+    });
+
+    await newUser.save();
+
     res.status(201).json(savedRestaurant);
   } catch (error) {
     console.error("Error saving restaurant:", error);
@@ -60,12 +76,11 @@ router.post("/", async (req, res) => {
   }
 });
 
-
 router.get("/", async (req, res) => {
   try {
-    console.log("Fetching restaurants..."); 
+    console.log("Fetching restaurants...");
     const restaurants = await Restaurant.find();
-    console.log("Restaurants found:", restaurants); 
+    console.log("Restaurants found:", restaurants);
     res.json(restaurants);
   } catch (error) {
     console.error("Error fetching restaurants:", error);
@@ -73,7 +88,4 @@ router.get("/", async (req, res) => {
   }
 });
 
-
-
 module.exports = router;
-

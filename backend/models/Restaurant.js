@@ -23,11 +23,4 @@ const RestaurantSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now },
 });
 
-// Hash password before saving
-RestaurantSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
-
 module.exports = mongoose.model("Restaurant", RestaurantSchema);

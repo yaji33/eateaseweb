@@ -8,6 +8,7 @@ import Users from "./pages/admin/users/page.tsx";
 import Eateries from "./pages/admin/eateries/page.tsx";
 import Login from "./pages/auth/login.tsx"; 
 import Registration from "./pages/auth/registration.tsx";
+import Orders from "@/pages/business/orders/page.tsx"
 
 // Protected Route Component
 const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
@@ -26,12 +27,10 @@ function App() {
   return (
     <Router>
       <div className="antialiased flex bg-background">
-       
-        {user && <SideNav show={true} />}
+        {user?.role === "admin" && <SideNav show={true} />}
 
         <main className="min-h-screen w-full bg-background">
           <Routes>
-      
             <Route path="/" element={<Navigate to="/login" replace />} />
 
             {/* Public Route (Login) */}
@@ -39,8 +38,10 @@ function App() {
             <Route path="/registration" element={<Registration />} />
 
             {/* Protected Admin Routes */}
-            <Route path="/dashboard"
-              element={<ProtectedRoute element={<Dashboard />} />}/>
+            <Route
+              path="/dashboard"
+              element={<ProtectedRoute element={<Dashboard />} />}
+            />
             <Route
               path="/users"
               element={<ProtectedRoute element={<Users />} />}
@@ -50,7 +51,12 @@ function App() {
               element={<ProtectedRoute element={<Eateries />} />}
             />
 
-          
+            {/* Protected Business Routes */}
+            <Route
+              path="/business-home"
+              element={<ProtectedRoute element={<Orders />} />}
+            />
+
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </main>

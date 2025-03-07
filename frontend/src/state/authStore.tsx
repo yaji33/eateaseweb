@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   id: string;
@@ -9,14 +10,23 @@ interface User {
 
 interface AuthStore {
   user: User | null;
-  login: (user: User) => void;
+  login: (user: User, navigate: (path: string) => void) => void;
   logout: () => void;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
-  user: null, // Initially no user is logged in
+  user: null, 
+  login: (user, navigate) => {
+    set({ user});
 
-  login: (user) => set({ user }), // Save user details on login
+    if (user.role === "admin") {
+      navigate("/dashboard");
+    } else if (user.role === "business") {
+      navigate("/business-home"); 
+    } else {
+      navigate("/login"); 
+    }
+  },
 
-  logout: () => set({ user: null }), // Clear user on logout
+  logout: () => set({ user: null }), 
 }));
