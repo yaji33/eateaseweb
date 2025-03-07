@@ -2,38 +2,42 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "@/assets/logo.png";
 import "@/index.css";
-// import { loginUser } from "../../services/authService";
-// import { useAuthStore } from "../../state/authStore";
+import { loginUser } from "@/services/authService";
+
+import { useAuthStore } from "@/state/authStore";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  // const { user, setUser } = useAuthStore(); 
+  const { login } = useAuthStore(); 
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(""); 
+    setError("");
+
+    console.log("Attempting login with:", { email, password });
 
     try {
-      
-      const user = { email, role: "admin" }; 
+      const response = await loginUser(email, password);
+      console.log("Login successful:", response);
 
-      // Redirect based on user role
-      if (user.role === "admin") {
-        navigate("/admin/dashboard");
-      } else if (user.role === "business") {
-        navigate("/business/dashboard");
-      } else {
-        navigate("/login");
-      }
+      const user = {
+        id: response.id,
+        name: response.name,
+        role: response.role_id === 1 ? "admin" : "business",
+        token: response.token,
+      };
+      login(user, navigate);
+      //navigate(user.role === "admin" ? "/dashboard" : "/business-home");
 
-      // setUser(user); // Uncomment when auth store is ready
     } catch (err) {
+      console.error("Login error:", err);
       setError("Invalid email or password");
     }
   };
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-white flex-col font-poppins px-4">

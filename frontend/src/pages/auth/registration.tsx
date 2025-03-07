@@ -191,6 +191,7 @@ const Registration = () => {
                   <Phone
                     className="text-xs"
                     onChange={(value) => setContact(value || "")}
+                    defaultCountry="PH"
                   />
                 </div>
               </div>
