@@ -25,12 +25,7 @@ cd frontend
 npm install
 ```
 
-3️⃣ Install & Configure Tailwind CSS
-```sh
-npm install -D tailwindcss@3 postcss autoprefixer
-npx tailwindcss init -p
-```
-4️⃣ Run Development Server
+3️⃣ Run Development Server
 ```sh
 npm run dev
 ```
