@@ -2,15 +2,17 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { useAuthStore } from "./state/authStore.tsx";  
 import SideNav from "./components/admin/sidenav.tsx";
+import Navbar from "./components/business/navbar.tsx";
 import "./App.css";
 import Dashboard from "./pages/dashboard.tsx";
 import Users from "./pages/admin/users/page.tsx";
 import Eateries from "./pages/admin/eateries/page.tsx";
 import Login from "./pages/auth/login.tsx"; 
 import Registration from "./pages/auth/registration.tsx";
-import Orders from "@/pages/business/orders/page.tsx"
+import BusinessHome from "@/pages/business/home.tsx"
+import BusinessDashboard from "@/pages/business/dashboard/page.tsx";
 
-// Protected Route Component
+
 const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
     const { user } = useAuthStore();
     
@@ -28,6 +30,7 @@ function App() {
     <Router>
       <div className="antialiased flex bg-background">
         {user?.role === "admin" && <SideNav show={true} />}
+        {user?.role === "business" && <Navbar />}
 
         <main className="min-h-screen w-full bg-background">
           <Routes>
@@ -38,24 +41,13 @@ function App() {
             <Route path="/registration" element={<Registration />} />
 
             {/* Protected Admin Routes */}
-            <Route
-              path="/dashboard"
-              element={<ProtectedRoute element={<Dashboard />} />}
-            />
-            <Route
-              path="/users"
-              element={<ProtectedRoute element={<Users />} />}
-            />
-            <Route
-              path="/eateries"
-              element={<ProtectedRoute element={<Eateries />} />}
-            />
+            <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />}/>
+            <Route path="/users" element={<ProtectedRoute element={<Users />} />}/>
+            <Route path="/eateries" element={<ProtectedRoute element={<Eateries />} />}/>
 
             {/* Protected Business Routes */}
-            <Route
-              path="/business-home"
-              element={<ProtectedRoute element={<Orders />} />}
-            />
+            <Route path="/business-home" element={<ProtectedRoute element={<BusinessHome />} />}/>
+            <Route path="/business-dashboard" element={<ProtectedRoute element={<BusinessDashboard />} />}/>
 
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>

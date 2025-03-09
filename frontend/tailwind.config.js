@@ -10,7 +10,7 @@ module.exports = {
       colors: {
         background: "#F8F7F7",
         active_bg: "#FFE6EA",
-        text_active: "#DD0228",
+        text_active: "#AA0000",
         background_active: "#DD0228",
         color_eat: "#A60000",
         color_ease: "#DD0228",
