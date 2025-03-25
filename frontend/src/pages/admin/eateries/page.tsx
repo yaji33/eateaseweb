@@ -52,26 +52,26 @@ export default function Eateries() {
         <TabsList className="gap-3 p-0">
           <TabsTrigger
             value="all"
-            className="px-6 py-2 border focus:ring-0 rounded-md data-[state=active]:bg-background_active data-[state=active]:text-white "
+            className="px-6 py-2 border focus:ring-0 rounded-md data-[state=active]:bg-activeBackgroundDark data-[state=active]:text-white "
           >
             All
           </TabsTrigger>
 
           <TabsTrigger
             value="active"
-            className="px-6 py-2 border focus:ring-0 rounded-md data-[state=active]:bg-background_active data-[state=active]:text-white"
+            className="px-6 py-2 border focus:ring-0 rounded-md data-[state=active]:bg-activeBackgroundDark data-[state=active]:text-white"
           >
             Active
           </TabsTrigger>
           <TabsTrigger
             value="pending"
-            className="px-6 py-2 border focus:ring-0 rounded-md data-[state=active]:bg-background_active data-[state=active]:text-white"
+            className="px-6 py-2 border focus:ring-0 rounded-md data-[state=active]:bg-activeBackgroundDark data-[state=active]:text-white"
           >
             Pending
           </TabsTrigger>
           <TabsTrigger
             value="banned"
-            className="px-6 py-2 border focus:ring-0 rounded-md data-[state=active]:bg-background_active data-[state=active]:text-white"
+            className="px-6 py-2 border focus:ring-0 rounded-md data-[state=active]:bg-activeBackgroundDark data-[state=active]:text-white"
           >
             Banned
           </TabsTrigger>

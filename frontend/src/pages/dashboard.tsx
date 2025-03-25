@@ -24,31 +24,32 @@ export default function Dashboard() {
   return (
     <div className="text-black flex flex-col min-h-screen p-5 space-y-5 font-poppins">
       <div className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-5">
-        <Card className="flex items-center space-x-4 py-10 px-6">
-          <User size={32} />
-          <div className="flex justify-between w-full items-center">
-            <div>
+        <Card className="flex  items-center space-y-4 py-10 px-6 justify-center">
+          <div className="flex items-center space-x-4">
+            <User size={42} />
+            <div className=" w-full items-center">
               <p className="text-sm text-gray-500">Total Users</p>
               <h2 className="text-xl font-medium">123,456</h2>
             </div>
-            
           </div>
         </Card>
-        <Card className="flex items-center space-x-4 py-10 px-6">
-          <Utensils size={32} className="" />
-          <div className="flex justify-between w-full items-center">
-            <div>
+        <Card className="flex  items-center space-y-4 py-10 px-6 justify-center">
+          <div className="flex items-center space-x-4">
+            <Utensils size={42} />
+            <div className=" w-full items-center">
               <p className="text-sm text-gray-500">Total Eateries</p>
               <h2 className="text-xl font-medium">123,456</h2>
             </div>
-            
           </div>
         </Card>
-        <Card className="flex items-center space-x-4 py-10 px-6">
-          <Coins size={32} />
-          <div>
-            <p className="text-sm text-gray-500">Total Fees</p>
-            <h2 className="text-xl font-medium">123,456</h2>
+
+        <Card className="flex  items-center space-y-4 py-10 px-6 justify-center">
+          <div className="flex items-center space-x-4">
+            <Coins size={42} />
+            <div className=" w-full items-center">
+              <p className="text-sm text-gray-500">Total Fees</p>
+              <h2 className="text-xl font-medium">123,456</h2>
+            </div>
           </div>
         </Card>
       </div>
@@ -78,8 +79,7 @@ export default function Dashboard() {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <Card className="p-5">
-        </Card>
+        <Card className="p-5"></Card>
 
         <Card className="p-5">
           <h3 className="text-lg font-semibold mb-3">
@@ -87,16 +87,25 @@ export default function Dashboard() {
           </h3>
           <ul className="space-y-3">
             <li className="flex justify-between">
+              <span>🍽️ Fine Dining Restaurant by Jhona</span>
+              <span>100,322</span>
+            </li>
+            <li className="flex justify-between">
               <span>🍽️ Mac&Gab FoodHub</span>
               <span>20,322</span>
             </li>
+
             <li className="flex justify-between">
               <span>☕ Starbucks Tabaco</span>
               <span>17,302</span>
             </li>
             <li className="flex justify-between">
-              <span>🍵 Jucel's TakoyaTea</span>
+              <span>🍽️ Jucel Pogi Food Hub</span>
               <span>15,432</span>
+            </li>
+            <li className="flex justify-between">
+              <span>🍽️ Davies Choice</span>
+              <span>13,132</span>
             </li>
           </ul>
         </Card>
