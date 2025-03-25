@@ -4,9 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { DataTable } from "@/components/admin/data-table";
 import { Payment, columns } from "./columns";
-import { Owner, ownerColumns } from "./owner-column";
+import { User, userColumns } from "./user-column";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useOwnerStore } from "../../../state/modalStore";
+import { useUserStore } from "../../../state/modalStore";
 import { Modal } from "@/components/admin/modals";
 import {
   Dialog,
@@ -36,7 +36,7 @@ async function getData(): Promise<Payment[]> {
   ];
 }
 
-async function getOwnerData(): Promise<Owner[]> {
+async function getOwnerData(): Promise<User[]> {
   return [
     {
       id: "728ed52f",
@@ -44,7 +44,6 @@ async function getOwnerData(): Promise<Owner[]> {
       contact_number: "1234567890",
       email: "johndoe@gmail.com",
       address: "123, Lorem Ipsum",
-      status: "active",
     },
     {
       id: "a12bc34d",
@@ -52,7 +51,7 @@ async function getOwnerData(): Promise<Owner[]> {
       contact_number: "9876543210",
       email: "janesmith@gmail.com",
       address: "456, Dolor Sit Amet",
-      status: "offline",
+
     },
     {
       id: "b23cd45e",
@@ -60,7 +59,6 @@ async function getOwnerData(): Promise<Owner[]> {
       contact_number: "1122334455",
       email: "robertjohnson@gmail.com",
       address: "789, Consectetur Adipiscing",
-      status: "active",
     },
     {
       id: "c34de56f",
@@ -68,7 +66,6 @@ async function getOwnerData(): Promise<Owner[]> {
       contact_number: "2233445566",
       email: "emilydavis@gmail.com",
       address: "321, Elit Sed Do",
-      status: "active",
     },
     {
       id: "d45ef67a",
@@ -76,7 +73,7 @@ async function getOwnerData(): Promise<Owner[]> {
       contact_number: "3344556677",
       email: "michaelbrown@gmail.com",
       address: "654, Tempor Incididunt",
-      status: "offline",
+
     },
     {
       id: "e56fg78b",
@@ -84,7 +81,6 @@ async function getOwnerData(): Promise<Owner[]> {
       contact_number: "4455667788",
       email: "jessicawilson@gmail.com",
       address: "987, Ut Labore Et",
-      status: "active",
     },
     {
       id: "f67gh89c",
@@ -92,7 +88,7 @@ async function getOwnerData(): Promise<Owner[]> {
       contact_number: "5566778899",
       email: "davidmartinez@gmail.com",
       address: "159, Magna Aliqua",
-      status: "offline",
+
     },
     {
       id: "g78hi90d",
@@ -100,7 +96,6 @@ async function getOwnerData(): Promise<Owner[]> {
       contact_number: "6677889900",
       email: "sarahanderson@gmail.com",
       address: "753, Enim Ad Minim",
-      status: "active",
     },
     {
       id: "h89ij01e",
@@ -108,7 +103,7 @@ async function getOwnerData(): Promise<Owner[]> {
       contact_number: "7788990011",
       email: "danielthomas@gmail.com",
       address: "852, Veniam Quis",
-      status: "offline",
+
     },
     {
       id: "a30hg33f",
@@ -116,15 +111,14 @@ async function getOwnerData(): Promise<Owner[]> {
       contact_number: "1122334455",
       email: "ganda@gmail.com",
       address: "321, Tagas",
-      status: "active",
     },
   ];
 }
 
 export default function Users() {
   const [data, setData] = useState<Payment[]>([]);
-  const [ownerData, setOwnerData] = useState<Owner[]>([]);
-  const { open, closeModal, ownerId } = useOwnerStore();
+  const [ownerData, setOwnerData] = useState<User[]>([]);
+  const { open, closeModal, userId } = useUserStore();
 
   useEffect(() => {
     async function fetchData() {
@@ -158,31 +152,21 @@ export default function Users() {
         />
         
       </div>*/}
-      <Modal open={open} onClose={closeModal} ownerId={ownerId} />
+      <Modal open={open} onClose={closeModal} ownerId={userId} />
       <Tabs defaultValue="customers" className="">
         <TabsList className="gap-3 p-0">
-          <TabsTrigger
-            value="customers"
-            className="bg-white py-2 border focus:ring-0 rounded-md data-[state=active]:bg-background_active data-[state=active]:text-white"
-          >
-            Customers
-          </TabsTrigger>
-
+         
           <TabsTrigger
             value="owners"
             className="bg-white py-2 border focus:ring-0 rounded-md data-[state=active]:bg-background_active data-[state=active]:text-white"
           >
-            Owners
+            Customers
           </TabsTrigger>
         </TabsList>
+
         <TabsContent value="customers">
           <div className="container py-5">
-            <DataTable columns={columns} data={data} />
-          </div>
-        </TabsContent>
-        <TabsContent value="owners">
-          <div className="container py-5">
-            <DataTable columns={ownerColumns} data={ownerData} />
+            <DataTable columns={userColumns} data={ownerData} />
           </div>
         </TabsContent>
       </Tabs>
