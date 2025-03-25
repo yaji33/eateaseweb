@@ -15,18 +15,21 @@ interface AuthStore {
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
-  user: null, 
+  user: null,
   login: (user, navigate) => {
-    set({ user});
+    set({ user });
 
     if (user.role === "admin") {
       navigate("/dashboard");
     } else if (user.role === "business") {
-      navigate("/business-home"); 
+      navigate("/business-home");
     } else {
-      navigate("/login"); 
+      navigate("/login");
     }
   },
 
-  logout: () => set({ user: null }), 
+  logout: () => {
+    set({ user: null });
+    localStorage.removeItem("authToken"); 
+  },
 }));

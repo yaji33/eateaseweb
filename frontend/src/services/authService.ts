@@ -14,7 +14,7 @@ export const loginUser = async (
   password: string
 ): Promise<LoginResponse> => {
   try {
-    console.log("Sending login request:", { email, password }); // 🔍 Debugging
+    console.log("Sending login request:", { email, password });
 
     const response = await fetch("http://localhost:5001/api/auth/login", {
       method: "POST",
@@ -22,7 +22,7 @@ export const loginUser = async (
       body: JSON.stringify({ email, password }),
     });
 
-    console.log("Raw response:", response); // 🔍 Debugging
+    console.log("Raw response:", response); 
 
     const data: LoginResponse = await response.json();
 
@@ -34,7 +34,7 @@ export const loginUser = async (
 
     return data;
   } catch (error) {
-    console.error("Login error:", error); // 🔍 Debugging
+    console.error("Login error:", error); 
     throw new Error(
       error instanceof Error ? error.message : "An error occurred"
     );

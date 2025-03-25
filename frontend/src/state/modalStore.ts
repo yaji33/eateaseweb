@@ -1,10 +1,10 @@
 import { create } from "zustand";
 
-interface OwnerState {
-  ownerId: string | null;
-  ownerName: string | null;
-  setOwner: (id: string, name: string) => void;
-  clearOwner: () => void;
+interface UserState {
+  userId: string | null;
+  userName: string | null;
+  setUser: (id: string, name: string) => void;
+  clearUser: () => void;
 }
 
 interface EateryState {
@@ -16,15 +16,16 @@ interface EateryState {
 
 interface ModalState {
   open: boolean;
+  rowData: any | null;
   openModal: () => void;
   closeModal: () => void;
 }
 
-export const useOwnerStore = create<OwnerState>((set) => ({
-  ownerId: null,
-  ownerName: null,
-  setOwner: (id, name) => set({ ownerId: id, ownerName: name }),
-  clearOwner: () => set({ ownerId: null, ownerName: null }),
+export const useUserStore = create<UserState>((set) => ({
+  userId: null,
+  userName: null,
+  setUser: (id, name) => set({ userId: id, userName: name }),
+  clearUser: () => set({ userId: null, userName: null }),
 }));
 
 export const useEateryStore = create<EateryState>((set) => ({
@@ -36,6 +37,7 @@ export const useEateryStore = create<EateryState>((set) => ({
 
 export const useModalStore = create<ModalState>((set) => ({
   open: false,
-  openModal: () => set({ open: true }),
-  closeModal: () => set({ open: false }),
+  rowData: null,
+  openModal: (data) => set({ open: true, rowData: data }), 
+  closeModal: () => set({ open: false, rowData: null }), 
 }));
