@@ -57,13 +57,13 @@ const Registration = () => {
         <div className="flex items-center">
           <img src={Logo} alt="logo" className="w-6" />
           <h1 className="font-bold text-xl ml-2">
-            <span className="text-color_eat">Eat</span>
-            <span className="text-color_ease">Ease</span>
+            <span className="text-brandPrimary">Eat</span>
+            <span className="text-brandSecondary">Ease</span>
           </h1>
         </div>
 
         <button
-          className="bg-primary_btn text-white px-4 p-1 rounded-md text-sm font-medium"
+          className="bg-buttonPrimary text-white px-4 p-1 rounded-md text-sm font-medium"
           onClick={() => navigate("/login")}
         >
           Login
@@ -75,7 +75,9 @@ const Registration = () => {
         <div className="flex flex-col sm:flex-row gap-7 sm:justify-between w-full max-w-6xl">
           {/* Registration Form */}
           <div className="w-full sm:w-full max-w-sm bg-white p-6 rounded-lg shadow-md h-auto md:w-1/2 form-container">
-            <h1 className="font-medium text-lg my-6">Create your business account</h1>
+            <h1 className="font-medium text-lg my-6">
+              Create your business account
+            </h1>
 
             {error && (
               <p className="text-red-500 text-sm text-center">{error}</p>
@@ -198,7 +200,7 @@ const Registration = () => {
 
               <button
                 type="submit"
-                className="bg-primary_btn text-white py-3 rounded-md text-center w-full font-medium text-sm mt-14"
+                className="bg-buttonPrimary text-white py-3 rounded-md text-center w-full font-medium text-sm mt-14"
                 disabled={loading}
               >
                 {loading ? "Registering..." : "Get in touch now!"}
@@ -210,7 +212,7 @@ const Registration = () => {
           <div className="w-full text-center sm:text-left px-4 mt-8 sm:mt-0 ">
             <p className="text-3xl font-semibold text-gray-700 mb-10">
               Your Restaurant,{" "}
-              <span className="text-color_ease">Your Rules</span> – Join the
+              <span className="text-brandSecondary">Your Rules</span> – Join the
               Future of Online Ordering!
             </p>
             <p>

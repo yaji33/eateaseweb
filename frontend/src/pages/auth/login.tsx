@@ -45,8 +45,8 @@ const Login = () => {
       <div className="flex items-center my-8 sm:my-12">
         <img src={Logo} alt="logo" className="w-10 sm:w-12" />
         <h1 className="font-bold text-2xl sm:text-3xl">
-          <span className="text-color_eat">E</span>
-          <span className="text-color_ease">Portal</span>
+          <span className="text-brandPrimary">E</span>
+          <span className="text-brandSecondary">Portal</span>
         </h1>
       </div>
 
@@ -82,14 +82,14 @@ const Login = () => {
               autoComplete="current-password"
             />
 
-            <button className="mb-6 text-right text-xs text-primary_btn">
+            <button className="mb-6 text-right text-xs text-buttonPrimary">
               Forgot your password?
             </button>
           </div>
 
           <button
             type="submit"
-            className="bg-primary_btn text-white py-3 rounded-md text-center w-full font-medium text-sm"
+            className="bg-buttonPrimary text-white py-3 rounded-md text-center w-full font-medium text-sm"
           >
             Login
           </button>
@@ -103,19 +103,19 @@ const Login = () => {
         </div>
 
         {/* Login with Phone */}
-        <button className="border border-primary_btn text-black py-3 rounded-md w-full font-medium text-sm">
+        <button className="border border-buttonPrimary text-black py-3 rounded-md w-full font-medium text-sm">
           Login with phone number
         </button>
 
         {/* Terms & Policy */}
         <p className="text-xs text-center py-3 sm:w-full">
           By continuing you agree to our
-          <span className="text-highlight_btn mx-1 cursor-pointer">
+          <span className="text-buttonHighlight mx-1 cursor-pointer">
             {" "}
             terms of use
           </span>
           and
-          <span className="text-highlight_btn mx-1 cursor-pointer">
+          <span className="text-buttonHighlight mx-1 cursor-pointer">
             {" "}
             privacy policy
           </span>
@@ -126,7 +126,7 @@ const Login = () => {
         <div className="flex items-center gap-1 text-sm justify-center w-full my-4 mt-10">
           <p>Don't have an account?</p>
           <button
-            className="text-primary_btn font-medium"
+            className="text-buttonPrimary font-medium"
             onClick={() => navigate("/registration")}
           >
             Partner with us!
