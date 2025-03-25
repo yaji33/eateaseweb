@@ -1,58 +1,63 @@
-"use client";
+  "use client";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { MoreHorizontal } from "lucide-react";
-import {
-  useOwnerStore,
-  useEateryStore,
-  useModalStore,
-} from "@/state/modalStore";
+  import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+  } from "@/components/ui/dropdown-menu";
+  import { Button } from "@/components/ui/button";
+  import { MoreHorizontal } from "lucide-react";
+  import {
+    useUserStore,
+    useEateryStore,
+    useModalStore,
+  } from "@/state/modalStore";
 
-const ActionsMenu = ({ rowData, type }) => {
-  const { openModal } = useModalStore();
-  const { setEatery } = useEateryStore();
-  const { setOwner } = useOwnerStore();
+  const ActionsMenu = ({ rowData, type }) => {
+    const { openModal } = useModalStore();
+    const { setEatery } = useEateryStore();
+    const { setUser } = useUserStore();
 
-  const handleAction = () => {
-    console.log(`Opening modal for ${type}:`, rowData.id, rowData.name);
+    // If the status is active, don't render the ActionsMenu
+    if (rowData.status === "active") return null;
 
-    setEatery(null, null);
-    setOwner(null, null);
+    const handleAction = () => {
+      console.log(`Opening modal for ${type}:`, rowData.id, rowData.name, rowData.status);
 
-    openModal();
+      setEatery(null, null);
+      setUser(null, null);
 
-    if (type === "eateries") {
-      setEatery(rowData.id, rowData.name);
-    } else {
-      setOwner(rowData.id, rowData.name);
-    }
+       if (type === "eateries") {
+         setEatery(rowData.id, rowData.name);
+       } else {
+         setUser(rowData.id, rowData.name);
+       }
+
+       openModal(rowData);
+    };
+
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {rowData.status === "pending" && (
+            <DropdownMenuItem onClick={handleAction}>
+              View Application
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
   };
 
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8">
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleAction}>
-          {type === "eateries" ? "View Eateries" : "View Business"}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-};
-
-export default ActionsMenu;
+  export default ActionsMenu;
