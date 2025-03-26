@@ -2,10 +2,11 @@ import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/state/authStore";
 import Logo from "@/assets/logo.png";
-import Dashboard_logo from "@/assets/dashboard.svg";
-import Users_logo from "@/assets/user.svg";
-import Eateries_logo from "@/assets/eatery.svg";
 import Logout_logo from "@/assets/logout.svg";
+import DashboardIcon from "@/assets/layout-dashboard.svg";
+import UsersIcon from "@/assets/users-round.svg";
+import EateriesIcon from "@/assets/utensils-crossed.svg";
+import LogoutIcon from "@/assets/log-out.svg";
 
 import {
   AlertDialog,
@@ -24,9 +25,9 @@ const SideNav = () => {
   const logout = useAuthStore((state) => state.logout);
 
   const navItems = [
-    { to: "/dashboard", label: "Dashboard", icon: Dashboard_logo },
-    { to: "/users", label: "Users", icon: Users_logo },
-    { to: "/eateries", label: "Eateries", icon: Eateries_logo },
+    { to: "/dashboard", label: "Dashboard", icon: DashboardIcon },
+    { to: "/users", label: "Users", icon: UsersIcon },
+    { to: "/eateries", label: "Eateries", icon: EateriesIcon },
   ];
 
   const handleLogout = () => {
@@ -75,7 +76,7 @@ const SideNav = () => {
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <button className="flex items-center gap-3 px-3 py-2 w-full hover:bg-red-100 rounded-md transition duration-300 ">
-              <img src={Logout_logo} alt="Logout" className="w-5 h-5 mx-1" />
+              <img src={LogoutIcon} alt="Logout" className="w-5 h-5 mx-1" />
               <span>Logout</span>
             </button>
           </AlertDialogTrigger>
