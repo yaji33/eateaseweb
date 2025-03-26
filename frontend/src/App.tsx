@@ -16,7 +16,7 @@ function App() {
         {user?.role === "business" && <Navbar />}
         <main
           className={`min-h-screen w-full bg-background transition-all ${
-            user?.role === "admin" ? "ml-56" : ""
+            user?.role === "admin" ? "ml-60" : ""
           }`}
         >
           <AppRoutes />
