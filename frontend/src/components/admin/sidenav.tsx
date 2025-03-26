@@ -35,8 +35,7 @@ const SideNav = () => {
   };
 
   return (
-    <nav className="bg-white h-screen w-56 flex flex-col shadow-sm z-10 font-poppins overflow-hidden fixed">
-      {/* Logo Section */}
+    <nav className="bg-white h-screen w-60 flex flex-col shadow-sm z-10 font-poppins overflow-hidden fixed">
       <div className="flex items-center mx-2 my-3">
         <img src={Logo} alt="logo" className="w-12" />
         <h1 className="font-bold text-2xl">
@@ -44,8 +43,6 @@ const SideNav = () => {
           <span className="text-brandSecondary">Ease</span>
         </h1>
       </div>
-
-      {/* Navigation Items */}
       <ul className="text-left list-none flex flex-col space-y-2 text-md mt-8 flex-grow">
         {navItems.map((item) => (
           <li key={item.to}>
