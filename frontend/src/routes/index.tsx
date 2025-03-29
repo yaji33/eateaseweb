@@ -12,6 +12,8 @@ import BusinessDashboard from "@/pages/business/dashboard/page";
 import BusinessOrders from "@/pages/business/orders/page";
 import BusinessMenu from "@/pages/business/menu/page";
 import BusinessTransactions from "@/pages/business/transactions/page";
+import BusinessProfile from "@/pages/business/profile/page";
+import BusinessMessages from "@/pages/business/messages/page";
 
 const AppRoutes = () => {
   return (
@@ -47,6 +49,14 @@ const AppRoutes = () => {
       <Route
         path="/business-transactions"
         element={<ProtectedRoute element={<BusinessTransactions />} />}
+      />
+      <Route
+        path="/business-profile"
+        element={<ProtectedRoute element={<BusinessProfile />} />}
+      />
+      <Route
+        path="/business-messages"
+        element={<ProtectedRoute element={<BusinessMessages />} />}
       />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
