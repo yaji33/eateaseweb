@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Delete from "@/assets/delete.svg";
-import Add from "@/assets/add.svg";
 import Filter from "@/assets/filter.svg";
 import Search from "@/assets/search.svg";
 import FoodImg from "@/assets/Food.png";
@@ -9,7 +8,6 @@ import EditIcon from "@/assets/edit.svg";
 import { Checkbox } from "@/components/ui/checkbox";
 import FoodCard from "@/components/business/FoodCard";
 import Modals from "@/components/business/modals";
-import SearchModal from "@/components/business/search";
 import Screen from "@/assets/screen_warning.svg";
 
 interface FoodCardProps {
@@ -41,7 +39,11 @@ export default function Page() {
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
         <div className="card bg-base-100 shadow-xl text-center p-8 ">
           <figure>
-            <img src={Screen} alt="Small screen warning" className="w-96 mx-auto" />
+            <img
+              src={Screen}
+              alt="Small screen warning"
+              className="w-96 mx-auto"
+            />
           </figure>
           <div className="card-body mt-5">
             <h2 className="text-xl font-bold text-red-500">Screen Too Small</h2>
@@ -62,8 +64,8 @@ export default function Page() {
     <div className="flex w-full max-w-5xl mx-auto  flex-col min-h-screen bg-background font-poppins px-4 pt-20 gap-4">
       <h1 className="font-semibold text-xl">Menu</h1>
       <div className="flex items-center justify-between w-full gap-2 sm:gap-4">
-        <div className="flex items-center">
-          <div className="relative w-full max-w-sm hidden sm:block">
+        <div className="flex items-center max-w-xl w-full">
+          <div className="relative w-full sm:max-w-xl md:max-w-2xl lg:max-w-3xl block">
             <input
               type="text"
               placeholder="Search"
@@ -75,8 +77,8 @@ export default function Page() {
               className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 opacity-60"
             />
           </div>
-          <SearchModal />
         </div>
+
         <div className="flex sm:gap-2 gap-1">
           <button className="border rounded-md p-2 bg-white flex items-center justify-center w-10 h-10">
             <img src={Filter} alt="filter" className="w-4" />
