@@ -2,7 +2,6 @@ import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/state/authStore";
 import Logo from "@/assets/logo.png";
-import Logout_logo from "@/assets/logout.svg";
 import DashboardIcon from "@/assets/layout-dashboard.svg";
 import UsersIcon from "@/assets/users-round.svg";
 import EateriesIcon from "@/assets/utensils-crossed.svg";
