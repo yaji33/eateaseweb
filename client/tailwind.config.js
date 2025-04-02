@@ -9,6 +9,7 @@ module.exports = {
       },
       colors: {
         background: "#F8F7F7",
+        background_1: "#F8F9FA",
         active_bg: "#FFE6EA",
         text_active: "#AA0000",
         activeBackgroundDark: "#DD0228",
@@ -47,7 +48,7 @@ module.exports = {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
-        border: "hsl(var(--border))",
+        border: "#E0E0E0",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         chart: {
