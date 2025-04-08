@@ -57,20 +57,20 @@ const OrderCard: React.FC<OrderCardProps> = ({
             <button className="w-full border p-2 rounded-md text-black">
               Deny
             </button>
-            <button className="w-full bg-buttonHighlight p-2 rounded-md text-white">
+            <button className="w-full bg-buttonPrimary p-2 rounded-md text-white">
               Accept
             </button>
           </>
         )}
 
         {status === "ongoing" && (
-          <button className="w-full bg-red-500 p-2 rounded-md text-white">
+          <button className="w-full bg-buttonPrimary p-2 rounded-md text-white">
             Completed
           </button>
         )}
 
         {status === "completed" && (
-          <button className="w-full bg-red-500 p-2 rounded-md text-white">
+          <button className="w-full bg-buttonPrimary p-2 rounded-md text-white">
             Done
           </button>
         )}

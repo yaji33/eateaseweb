@@ -34,7 +34,7 @@ const transactions: Transaction[] = [
 ];
 export default function page() {
   return (
-    <div className="flex w-full max-w-5xl mx-auto flex-col min-h-screen bg-background font-poppins px-4 pt-20 gap-4">
+    <div className="flex w-full max-w-5xl mx-auto flex-col min-h-screen font-poppins px-4 pt-20 gap-4">
       <h1 className="font-semibold text-xl">Transactions</h1>
       <TransactionsDataTable transactions={transactions} />
     </div>

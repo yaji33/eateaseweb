@@ -94,25 +94,25 @@ const orders: OrderCardProps[] = [
 
 export default function Page() {
   return (
-    <div className="flex w-full max-w-5xl mx-auto flex-col min-h-screen bg-background font-poppins px-4 pt-20 gap-4">
+    <div className="flex w-full max-w-5xl mx-auto flex-col min-h-screen bg-background_1font-poppins px-4 pt-20 gap-4">
       <h1 className="font-semibold text-xl">Orders</h1>
       <Tabs defaultValue="pending" className="w-full flex flex-col flex-grow">
-        <TabsList className="flex w-full bg-active_bg">
+        <TabsList className="flex w-full justify-start gap-3">
           <TabsTrigger
             value="pending"
-            className="flex-1 text-center focus:ring-0 text-text_active data-[state=active]:bg-activeBackgroundDark data-[state=active]:text-white p-2"
+            className=""
           >
             Pending
           </TabsTrigger>
           <TabsTrigger
             value="ongoing"
-            className="flex-1 text-center focus:ring-0 text-text_active data-[state=active]:bg-activeBackgroundDark data-[state=active]:text-white p-2"
+            className=""
           >
             Ongoing
           </TabsTrigger>
           <TabsTrigger
             value="completed"
-            className="flex-1 text-center focus:ring-0 text-text_active data-[state=active]:bg-activeBackgroundDark data-[state=active]:text-white p-2"
+            className=""
           >
             Completed
           </TabsTrigger>

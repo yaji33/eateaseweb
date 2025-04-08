@@ -69,7 +69,6 @@ export default function AddMenuModal() {
             className="border-gray-300 focus:ring-primary"
           />
 
-          {/* Image Upload with Preview */}
           <div className="flex flex-col items-center gap-2">
             {menuData.imagePreview && (
               <img

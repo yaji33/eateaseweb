@@ -15,9 +15,9 @@ interface TransactionsDataTableProps {
 }
 
 const paymentIcons: Record<string, JSX.Element> = {
-  "Credit Card": <FaCreditCard className="text-blue-500" />,
-  PayPal: <FaPaypal className="text-blue-700" />,
-  "Debit Card": <FaUniversity className="text-green-500" />,
+  "Credit Card": <FaCreditCard className="text-blue-500 text-lg" />,
+  PayPal: <FaPaypal className="text-blue-700 text-lg" />,
+  "Debit Card": <FaUniversity className="text-green-500 text-lg" />,
 };
 
 const TransactionsDataTable: React.FC<TransactionsDataTableProps> = ({
@@ -47,19 +47,24 @@ const TransactionsDataTable: React.FC<TransactionsDataTableProps> = ({
   };
 
   return (
-    <div className="relative overflow-x-auto rounded-md shadow-sm">
-      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <thead className="bg-pink-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+    <div className="relative overflow-x-auto rounded-lg shadow-lg">
+      <table className="w-full text-sm text-left text-gray-600 dark:text-gray-300">
+        <thead className="bg-gradient-to-r from-red-600 to-red-800 text-white text-base">
           <tr>
-            <th className="px-6 py-3 font-normal">Customer Name</th>
-            <th className="px-6 py-3 font-normal">Transaction ID</th>
-            <th className="px-6 py-3 font-normal">Total Payment</th>
-            <th className="px-6 py-3 font-normal">Mode of Payment</th>
+            <th className="px-6 py-4 font-semibold">Customer Name</th>
+            <th className="px-6 py-4 font-semibold">Transaction ID</th>
+            <th className="px-6 py-4 font-semibold">Total Payment</th>
+            <th className="px-6 py-4 font-semibold">Mode of Payment</th>
             <th
-              className="px-6 py-3 font-normal cursor-pointer flex items-center"
+              className="px-6 py-4 font-semibold cursor-pointer flex items-center gap-2"
               onClick={toggleSortOrder}
             >
-              Timestamp {sortOrder === "asc" ? <BsSortUp /> : <BsSortDown />}
+              Timestamp{" "}
+              {sortOrder === "asc" ? (
+                <BsSortUp className="text-lg" />
+              ) : (
+                <BsSortDown className="text-lg" />
+              )}
             </th>
           </tr>
         </thead>
@@ -67,22 +72,24 @@ const TransactionsDataTable: React.FC<TransactionsDataTableProps> = ({
           {sortedTransactions.map((transaction, index) => (
             <tr
               key={index}
-              className="border-b bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className={`border-b ${
+                index % 2 === 0 ? "bg-gray-50" : "bg-white"
+              } dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all`}
             >
-              <td className="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
                 {transaction.customerName}
               </td>
-              <td className="px-6 py-3 font-mono">
+              <td className="px-6 py-4 font-mono">
                 {transaction.transactionId}
               </td>
-              <td className="px-6 py-3 font-semibold text-gray-900">
-                ${transaction.totalPayment}
+              <td className="px-6 py-4 font-semibold text-gray-900">
+                ₱ {transaction.totalPayment}
               </td>
-              <td className="px-6 py-3 flex items-center gap-2">
+              <td className="px-6 py-4 flex items-center gap-3">
                 {paymentIcons[transaction.modeOfPayment] || "💰"}{" "}
                 {transaction.modeOfPayment}
               </td>
-              <td className="px-6 py-3">{formatDate(transaction.timestamp)}</td>
+              <td className="px-6 py-4">{formatDate(transaction.timestamp)}</td>
             </tr>
           ))}
         </tbody>
