@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useChat } from "@/context/ChatContext";
 import Logo from "@/assets/logo.png";
 import ChatIcon from "@/assets/ep_chat-round.svg";
 import NotificationIcon from "@/assets/ion_notifications-outline.svg";
@@ -7,6 +8,7 @@ import ShopIcon from "@/assets/mac&gab.svg";
 import "@/index.css";
 
 function Navbar() {
+  const { messages, setSelectedChat, selectedChat } = useChat();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const notifRef = useRef(null);
@@ -33,9 +35,11 @@ function Navbar() {
     { to: "/business-transactions", label: "Transactions" },
   ];
 
-  const handleChatClick = (conversationId) => {
-    navigate("/business-messages");
+  const handleChatClick = (chat) => {
+    setSelectedChat(chat);
+    navigate("/business-messages"); 
   };
+
 
   return (
     <nav className="fixed top-0 w-full flex p-1 bg-white shadow-sm px-2 sm:px-8 z-50 justify-between">
@@ -74,18 +78,20 @@ function Navbar() {
               <div className="absolute right-0 w-72 bg-white shadow-lg rounded-lg p-4 z-50 mt-5">
                 <p className="text-gray-800 font-medium">Messages</p>
                 <div className="mt-2 space-y-2">
-                  <button
-                    className="block w-full text-left p-2 border-b hover:bg-gray-100"
-                    onClick={() => handleChatClick(1)}
-                  >
-                    John Doe
-                  </button>
-                  <button
-                    className="block w-full text-left p-2 border-b hover:bg-gray-100"
-                    onClick={() => handleChatClick(2)}
-                  >
-                    Jane Smith
-                  </button>
+                  {messages.map((chat) => (
+                    <button
+                      key={chat.id}
+                      className="block w-full text-left p-2 border-b hover:bg-gray-100"
+                      onClick={() => handleChatClick(chat)}
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-medium">{chat.sender}</span>
+                        <span className="text-gray-500 text-sm truncate">
+                          {chat.messages[chat.messages.length - 1].text}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
@@ -109,7 +115,6 @@ function Navbar() {
               </div>
             )}
           </div>
-
           <NavLink to="/business-profile">
             <img src={ShopIcon} alt="shop" className="w-5" />
           </NavLink>
