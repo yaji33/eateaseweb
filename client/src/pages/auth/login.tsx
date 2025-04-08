@@ -30,7 +30,6 @@ const Login = () => {
         token: response.token,
       };
       login(user, navigate);
-      //navigate(user.role === "admin" ? "/dashboard" : "/business-home");
 
     } catch (err) {
       console.error("Login error:", err);
@@ -82,7 +81,9 @@ const Login = () => {
               autoComplete="current-password"
             />
 
-            <button className="mb-6 text-right text-xs text-buttonPrimary">
+            <button className="mb-6 text-right text-xs text-buttonPrimary"
+              onClick={() => navigate("/reset-password")}
+            >
               Forgot your password?
             </button>
           </div>
@@ -95,27 +96,19 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Divider */}
-        <div className="flex items-center w-full my-4">
-          <span className="flex-1 border-t border-gray-300"></span>
-          <span className="px-2 text-gray-500">Or</span>
-          <span className="flex-1 border-t border-gray-300"></span>
-        </div>
-
-        {/* Login with Phone */}
-        <button className="border border-buttonPrimary text-black py-3 rounded-md w-full font-medium text-sm">
-          Login with phone number
-        </button>
-
         {/* Terms & Policy */}
         <p className="text-xs text-center py-3 sm:w-full">
           By continuing you agree to our
-          <span className="text-buttonHighlight mx-1 cursor-pointer">
+          <button className="text-buttonHighlight mx-1 cursor-pointer"
+            onClick={() => navigate("/terms")}
+          >
             {" "}
             terms of use
-          </span>
+          </button>
           and
-          <span className="text-buttonHighlight mx-1 cursor-pointer">
+          <span className="text-buttonHighlight mx-1 cursor-pointer"
+            onClick={() => navigate("/privacy-policy")}
+          >
             {" "}
             privacy policy
           </span>
