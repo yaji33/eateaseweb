@@ -6,6 +6,9 @@ import Dashboard from "@/pages/dashboard";
 import Users from "@/pages/admin/users/page";
 import Eateries from "@/pages/admin/eateries/page";
 import Login from "@/pages/auth/login";
+import ResetPassword from "@/pages/auth/reset-password";
+import Terms from "@/pages/public/Terms";
+import Privacy from "@/pages/public/Privacy";
 import Registration from "@/pages/auth/registration";
 import BusinessHome from "@/pages/business/home";
 import BusinessDashboard from "@/pages/business/dashboard/page";
@@ -20,7 +23,10 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/registration" element={<Registration />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy-policy" element={<Privacy />} />
       <Route
         path="/dashboard"
         element={<ProtectedRoute element={<Dashboard />} />}
