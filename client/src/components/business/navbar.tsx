@@ -37,20 +37,20 @@ function Navbar() {
 
   const handleChatClick = (chat) => {
     setSelectedChat(chat);
-    navigate("/business-messages"); 
+    navigate("/business-messages");
   };
-
 
   return (
     <nav className="fixed top-0 w-full flex p-1 bg-white shadow-sm px-2 sm:px-8 z-50 justify-between">
       <div className="w-full max-w-5xl mx-auto flex justify-between items-center">
-        <div className="flex items-center">
+        <NavLink to="/business-home" className="flex items-center gap-2">
           <img src={Logo} alt="logo" className="w-10" />
           <h1 className="font-bold text-2xl">
             <span className="text-brandPrimary">Eat</span>
             <span className="text-brandSecondary">Ease</span>
           </h1>
-        </div>
+        </NavLink>
+
         <ul className="text-left list-none flex text-md">
           {navItems.map((item) => (
             <li key={item.to}>
