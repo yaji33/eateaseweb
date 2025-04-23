@@ -3,7 +3,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./protectedRoutes";
 
 import Dashboard from "@/pages/dashboard";
-import Users from "@/pages/admin/users/page";
 import Eateries from "@/pages/admin/eateries/page";
 import Login from "@/pages/auth/login";
 import ResetPassword from "@/pages/auth/reset-password";
@@ -31,7 +30,7 @@ const AppRoutes = () => {
         path="/dashboard"
         element={<ProtectedRoute element={<Dashboard />} />}
       />
-      <Route path="/users" element={<ProtectedRoute element={<Users />} />} />
+
       <Route
         path="/eateries"
         element={<ProtectedRoute element={<Eateries />} />}
