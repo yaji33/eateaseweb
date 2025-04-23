@@ -27,60 +27,57 @@ export default function Page(): React.ReactElement {
     }
   }, [selectedChat, messages, setSelectedChat]);
 
-  
-
   const handleSendMessage = (): void => {
-  if (!messageInput.trim() || !selectedChat) return;
+    if (!messageInput.trim() || !selectedChat) return;
 
-  const newMessage: Message = {
-    sender: "Me",
-    text: messageInput,
-    time: "Now",
+    const newMessage: Message = {
+      sender: "Me",
+      text: messageInput,
+      time: "Now",
+    };
+    sendMessage(newMessage);
+    setSelectedChat({
+      ...selectedChat,
+      messages: [...selectedChat.messages, newMessage],
+    });
+    setMessageInput("");
   };
-  sendMessage(newMessage);
-  setSelectedChat({
-    ...selectedChat,
-    messages: [...selectedChat.messages, newMessage],
-  });
-  setMessageInput("");
-};
-
 
   return (
-    <div className="flex w-full max-w-5xl mx-auto flex-col min-h-screen font-poppins px-4 pt-20 gap-4">
-      <h1 className="text-xl font-semibold">Chats</h1>
-      <div className="flex w-full h-[36rem] border rounded-md bg-white shadow-lg">
-        <div className="flex flex-col w-1/3 border-r">
+    <div className="flex flex-col w-full max-w-5xl mx-auto min-h-screen px-4 pt-20 font-poppins ">
+      <h1 className="text-xl font-semibold mb-4">Chats</h1>
+      <div className="flex flex-1 w-full rounded-md shadow-lg border overflow-hidden my-5 bg-white min-h-[500px] h-[calc(100vh-8rem)]">
+        <div className="flex flex-col w-full max-w-xs border-r">
           <div className="flex items-center gap-2 bg-background_1 p-3 m-3 rounded-md">
             <img src={Search} alt="search icon" />
             <input
               type="text"
               placeholder="Search"
-              className="border-none text-sm outline-none focus:ring-0 focus:border-transparent shadow-none bg-transparent flex-1"
+              className="flex-1 text-sm bg-transparent border-none outline-none"
             />
           </div>
-          <div className="flex flex-col p-3 space-y-3 overflow-y-auto flex-grow">
+          <div className="flex-1 p-3 space-y-3 overflow-y-auto">
             {messages.map((chat: Chat) => (
               <div
                 key={chat.id}
-                className={`flex items-center p-3 rounded-md cursor-pointer transition-all duration-300 ${
+                className={`flex items-center p-3 rounded-md cursor-pointer ${
                   selectedChat?.id === chat.id
                     ? "bg-gray-100"
-                    : "bg-white hover:bg-gray-200"
+                    : "hover:bg-gray-200"
                 }`}
                 onClick={() => setSelectedChat(chat)}
               >
                 <img
                   src={Profile}
                   alt="Profile"
-                  className="rounded-full w-10 h-10 mr-3"
+                  className="w-10 h-10 mr-3 rounded-full"
                 />
-                <div className="w-full">
-                  <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex justify-between items-center">
                     <span className="font-semibold text-sm">{chat.sender}</span>
                     <span className="text-xs text-gray-400">{chat.time}</span>
                   </div>
-                  <span className="text-xs text-gray-600">
+                  <span className="text-xs text-gray-600 truncate">
                     {chat.messages[chat.messages.length - 1].text}
                   </span>
                 </div>
@@ -88,15 +85,14 @@ export default function Page(): React.ReactElement {
             ))}
           </div>
         </div>
-
-        <div className="flex-1 relative flex flex-col">
+        <div className="flex-1 flex flex-col relative">
           {selectedChat ? (
             <>
-              <div className="flex p-3 border-b items-center gap-3 text-sm font-semibold">
+              <div className="flex items-center gap-3 p-3 border-b text-sm font-semibold">
                 <img src={Profile} alt="" className="w-8 h-8 rounded-full" />
                 <span>{selectedChat.sender}</span>
               </div>
-              <div className="flex-1 p-3 overflow-y-auto space-y-2">
+              <div className="flex-1 p-4 overflow-y-auto space-y-2">
                 {selectedChat.messages.map((msg, index) => (
                   <div
                     key={index}
@@ -104,12 +100,12 @@ export default function Page(): React.ReactElement {
                       msg.sender === "Me" ? "justify-end" : "justify-start"
                     }`}
                   >
-                    <div className="max-w-xs md:max-w-sm">
+                    <div className="max-w-[80%] md:max-w-md">
                       <div
                         className={`p-3 rounded-lg text-sm shadow-md ${
                           msg.sender === "Me"
                             ? "bg-blue-500 text-white"
-                            : "bg-white text-gray-800"
+                            : "bg-gray-100 text-gray-800"
                         }`}
                       >
                         {msg.text}
@@ -125,24 +121,21 @@ export default function Page(): React.ReactElement {
                   </div>
                 ))}
               </div>
-              <div className="absolute bottom-0 w-full p-3 border-t flex items-center">
+              <div className="border-t p-3 flex items-center gap-2">
                 <input
                   type="text"
                   placeholder="Type a message..."
                   value={messageInput}
                   onChange={(e) => setMessageInput(e.target.value)}
-                  className="flex-1 p-3 rounded-lg outline-none bg-background_1 text-sm"
+                  className="flex-1 p-3 rounded-lg bg-background_1 text-sm outline-none"
                 />
-                <button
-                  onClick={handleSendMessage}
-                  className="ml-3 p-2 rounded-full transition"
-                >
+                <button onClick={handleSendMessage}>
                   <img src={Send} alt="Send" className="w-6 h-6" />
                 </button>
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-gray-500">
+            <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
               Select a chat to start messaging
             </div>
           )}
