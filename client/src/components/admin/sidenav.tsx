@@ -3,7 +3,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/state/authStore";
 import Logo from "@/assets/logo.png";
 import DashboardIcon from "@/assets/layout-dashboard.svg";
-import UsersIcon from "@/assets/users-round.svg";
 import EateriesIcon from "@/assets/utensils-crossed.svg";
 import LogoutIcon from "@/assets/log-out.svg";
 
@@ -25,7 +24,6 @@ const SideNav = () => {
 
   const navItems = [
     { to: "/dashboard", label: "Dashboard", icon: DashboardIcon },
-    { to: "/users", label: "Users", icon: UsersIcon },
     { to: "/eateries", label: "Eateries", icon: EateriesIcon },
   ];
 
@@ -36,7 +34,7 @@ const SideNav = () => {
 
   return (
     <nav className="bg-white h-screen w-60 flex flex-col shadow-sm z-10 font-poppins overflow-hidden fixed">
-      <div className="flex items-center mx-2 my-3">
+      <div className="flex items-center p-5">
         <img src={Logo} alt="logo" className="w-12" />
         <h1 className="font-bold text-2xl">
           <span className="text-brandPrimary">Eat</span>

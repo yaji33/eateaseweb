@@ -74,7 +74,7 @@ export function DataTable<TData, TValue>({
           <Search className="w-5 h-5 text-gray-500" />
           <input
             type="text"
-            placeholder="Search for Users"
+            placeholder="Search for Eateries"
             value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)
