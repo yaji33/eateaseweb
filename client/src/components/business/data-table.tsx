@@ -1,5 +1,13 @@
 import React, { useState } from "react";
 import { FaCreditCard, FaPaypal, FaUniversity } from "react-icons/fa";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { BsSortDown, BsSortUp } from "react-icons/bs";
 
 interface Transaction {
@@ -48,52 +56,41 @@ const TransactionsDataTable: React.FC<TransactionsDataTableProps> = ({
 
   return (
     <div className="relative overflow-x-auto rounded-lg shadow-lg">
-      <table className="w-full text-sm text-left text-gray-600 dark:text-gray-300">
-        <thead className="bg-gradient-to-r from-red-600 to-red-800 text-white text-base">
-          <tr>
-            <th className="px-6 py-4 font-semibold">Customer Name</th>
-            <th className="px-6 py-4 font-semibold">Transaction ID</th>
-            <th className="px-6 py-4 font-semibold">Total Payment</th>
-            <th className="px-6 py-4 font-semibold">Mode of Payment</th>
-            <th
-              className="px-6 py-4 font-semibold cursor-pointer flex items-center gap-2"
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-gray-100">
+            <TableHead className="text-left">Customer Name</TableHead>
+            <TableHead className="text-left">Transaction ID</TableHead>
+            <TableHead className="text-left">Total Payment</TableHead>
+            <TableHead className="text-left">Mode of Payment</TableHead>
+            <TableHead
+              className="text-left cursor-pointer"
               onClick={toggleSortOrder}
             >
-              Timestamp{" "}
+              Timestamp
               {sortOrder === "asc" ? (
-                <BsSortUp className="text-lg" />
+                <BsSortUp className="inline-block ml-1" />
               ) : (
-                <BsSortDown className="text-lg" />
+                <BsSortDown className="inline-block ml-1" />
               )}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {sortedTransactions.map((transaction, index) => (
-            <tr
-              key={index}
-              className={`border-b ${
-                index % 2 === 0 ? "bg-gray-50" : "bg-white"
-              } dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all`}
-            >
-              <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
-                {transaction.customerName}
-              </td>
-              <td className="px-6 py-4 font-mono">
-                {transaction.transactionId}
-              </td>
-              <td className="px-6 py-4 font-semibold text-gray-900">
-                ₱ {transaction.totalPayment}
-              </td>
-              <td className="px-6 py-4 flex items-center gap-3">
-                {paymentIcons[transaction.modeOfPayment] || "💰"}{" "}
+            <TableRow key={index} className="hover:bg-gray-50">
+              <TableCell>{transaction.customerName}</TableCell>
+              <TableCell>{transaction.transactionId}</TableCell>
+              <TableCell>${transaction.totalPayment}</TableCell>
+              <TableCell className="flex items-center gap-2">
+                {paymentIcons[transaction.modeOfPayment]}
                 {transaction.modeOfPayment}
-              </td>
-              <td className="px-6 py-4">{formatDate(transaction.timestamp)}</td>
-            </tr>
+              </TableCell>
+              <TableCell>{formatDate(transaction.timestamp)}</TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 };
