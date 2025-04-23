@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";  
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Delete from "@/assets/delete.svg";
 import Filter from "@/assets/filter.svg";
@@ -11,22 +12,78 @@ import Modals from "@/components/business/modals";
 import Screen from "@/assets/screen_warning.svg";
 
 interface FoodCardProps {
+  _id: string;
   image: string;
   title: string;
   price: number;
+  category_id: number;
 }
-
-const foods: FoodCardProps[] = [
-  { image: FoodImg, title: "Chicksilog", price: 346 },
-  { image: FoodImg, title: "Chicksilog", price: 346 },
-  { image: FoodImg, title: "Chicksilog", price: 346 },
-  { image: FoodImg, title: "Chicksilog", price: 346 },
-  { image: FoodImg, title: "Chicksilog", price: 346 },
-  { image: FoodImg, title: "Chicksilog", price: 346 },
-];
 
 export default function Page() {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  const [foods, setFoods] = useState<FoodCardProps[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+
+  useEffect(() => {
+    fetchMenuItems();
+  }, []);
+
+  const fetchMenuItems = async () => {
+    try {
+      const token = localStorage.getItem("token");
+  
+      const res = await axios.get("http://localhost:5001/api/menu", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const formatted = res.data.map((item: any) => ({
+        _id: item._id,
+        title: item.name,
+        price: item.price,
+        image: item.image_url,
+        category_id: item.category_id,
+      }));
+  
+      setFoods(formatted);
+    } catch (err) {
+      console.error("Failed to fetch menu items", err);
+    }
+  };  
+
+  const toggleSelectItem = (id: string) => {
+    setSelectedItems((prev) =>
+      prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
+    );
+  };  
+
+  const deleteSelectedItems = async () => {
+    if (selectedItems.length === 0) return;
+  
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        "http://localhost:5001/api/menu/delete-multiple",
+        { ids: selectedItems },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      setSelectedItems([]);
+      fetchMenuItems(); // refresh the list
+      alert("Selected items deleted!");
+    } catch (err) {
+      console.error("Failed to delete items", err);
+      alert("Error deleting menu items.");
+    }
+  };  
 
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth);
@@ -69,6 +126,8 @@ export default function Page() {
             <input
               type="text"
               placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full border rounded-md pl-12 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-sm bg-white"
             />
             <img
@@ -83,14 +142,19 @@ export default function Page() {
           <button className="border rounded-md p-2 bg-white flex items-center justify-center w-10 h-10">
             <img src={Filter} alt="filter" className="w-4" />
           </button>
-          <button className="border rounded-md p-2 bg-white flex items-center justify-center w-10 h-10">
+          <button
+            className="border rounded-md p-2 bg-white hover:bg-gray-200 flex items-center justify-center w-10 h-10"
+            onClick={deleteSelectedItems}
+          >
             <img src={Delete} alt="delete" className="w-4" />
           </button>
-          <Modals />
+
+
+          <Modals onItemAdded={fetchMenuItems} />
         </div>
       </div>
 
-      <Tabs defaultValue="all" className="w-full flex flex-col flex-grow">
+      <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full flex flex-col flex-grow">
         <TabsList className="flex w-full bg-active_bg">
           <TabsTrigger
             value="all"
@@ -136,25 +200,50 @@ export default function Page() {
           </TabsTrigger>
         </TabsList>
         <TabsContent
-          value="all"
-          className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4 data-[state=inactive]:hidden my-6"
-        >
-          {foods.map((food, index) => (
-            <div
-              key={index}
-              className="flex flex-col border rounded-lg p-2 bg-white shadow-md"
-            >
-              <div className="flex justify-between p-2">
-                <Checkbox className="" />
-                <button className="">
-                  <img src={EditIcon} alt="edit" className="w-4" />
-                </button>
-              </div>
+  value={selectedCategory}
+  className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4 data-[state=inactive]:hidden my-6"
+>
+{foods
+  .filter((food) => {
+    const categoryMap: Record<string, number> = {
+      "rice meals": 1,
+      pasta: 2,
+      snacks: 3,
+      drinks: 4,
+      coffee: 5,
+      other: 6,
+    };
 
-              <FoodCard {...food} />
-            </div>
-          ))}
-        </TabsContent>
+    const matchesCategory =
+      selectedCategory === "all" ||
+      food.category_id === categoryMap[selectedCategory];
+
+    const matchesSearch = food.title
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    return matchesCategory && matchesSearch;
+  })
+  .map((food, index) => (
+    <div
+      key={index}
+      className="flex flex-col border rounded-lg p-2 bg-white shadow-md"
+    >
+      <div className="flex justify-between p-2">
+        <Checkbox
+          checked={selectedItems.includes(food._id)}
+          onCheckedChange={() => toggleSelectItem(food._id)}
+        />
+
+        <button>
+          <img src={EditIcon} alt="edit" className="w-4" />
+        </button>
+      </div>
+      <FoodCard {...food} />
+    </div>
+))}
+
+</TabsContent>
       </Tabs>
     </div>
   );

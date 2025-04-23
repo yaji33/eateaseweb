@@ -6,25 +6,51 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";  
 import { Button } from "@/components/ui/button";
 import Add from "@/assets/add.svg";
 import Selection from "@/components/business/combo-box";
+import axios from "axios";
 
-export default function AddMenuModal() {
-  const [menuData, setMenuData] = useState({
+interface ModalsProps {
+  onItemAdded: () => void;
+}
+
+export default function AddMenuModal({ onItemAdded }: ModalsProps) {
+  const [menuData, setMenuData] = useState<{
+    title: string;
+    price: string;
+    image: File | null;
+    imagePreview: string | null;
+  }>({
     title: "",
     price: "",
     image: null,
     imagePreview: null,
-  });
+  });  
 
-  const handleChange = (e) => {
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);  
+
+  const [open, setOpen] = useState(false); // Controls modal visibility
+
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64String = (reader.result as string).split(',')[1]; // Strip prefix
+        resolve(base64String);
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };  
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMenuData({ ...menuData, [e.target.name]: e.target.value });
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       setMenuData({
         ...menuData,
@@ -32,14 +58,47 @@ export default function AddMenuModal() {
         imagePreview: URL.createObjectURL(file),
       });
     }
-  };
+  };  
 
-  const handleSubmit = () => {
-    console.log("New Menu Item:", menuData);
-  };
+  const handleSubmit = async () => {
+    if (!menuData.title || !menuData.price || !menuData.image || !selectedCategoryId) {
+      alert("Please fill out all fields.");
+      return;
+    }
+  
+    try {
+      const token = localStorage.getItem("token");
+      const imageBase64 = await fileToBase64(menuData.image);
+  
+      await axios.post("http://localhost:5001/api/menu", {
+        title: menuData.title,
+        price: menuData.price,
+        category_id: selectedCategoryId,
+        imageBase64: imageBase64,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      alert("Menu item added!");
+      onItemAdded();
+      setOpen(false);
+  
+      setMenuData({
+        title: "",
+        price: "",
+        image: null,
+        imagePreview: null,
+      });
+    } catch (error) {
+      console.error("Error adding menu item:", error);
+      alert("Failed to add menu item.");
+    }
+  };  
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button className="border rounded-md p-2 bg-white shadow-sm hover:bg-gray-100 transition">
           <img src={Add} alt="Add" className="w-5" />
@@ -88,7 +147,7 @@ export default function AddMenuModal() {
           </div>
 
           {/* Dropdown for Menu Category */}
-          <Selection />
+          <Selection onCategorySelect={setSelectedCategoryId} />
         </div>
 
         <div className="flex justify-end mt-4 gap-2">
