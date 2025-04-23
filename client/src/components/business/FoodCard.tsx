@@ -8,12 +8,15 @@ interface FoodCardProps {
 
 const FoodCard: React.FC<FoodCardProps> = ({ image, title, price }) => {
   return (
-    <div className="bg-white flex flex-col text-center">
-      <img src={image} alt="" className="object-cover rounded-md" />
-
-      <div className="justify-start text-left flex flex-col mx-2">
-        <h3 className="mt-2 text-lg font-semibold text-gray-800">{title}</h3>
-        <p className=" text-gray-600 font-medium">${price.toFixed(2)}</p>
+    <div className="flex flex-col items-center m-2">
+      <img
+        src={image}
+        alt={title}
+        className="w-full h-36 object-cover rounded-lg mb-2"
+      />
+      <div className="justify-start items-left flex flex-col w-full">
+        <h3 className="text-sm font-semibold ">{title}</h3>
+        <p className=" text-sm">₱{price}</p>
       </div>
     </div>
   );
