@@ -19,6 +19,7 @@ module.exports = {
         buttonHighlight: "#FF4141",
         border_color: "#DDD7D7",
         text_label: "#747474",
+        tabs_bg: "#E5E7EB",
         foreground: "hsl(var(--foreground))",
         card: {
           DEFAULT: "hsl(var(--card))",
