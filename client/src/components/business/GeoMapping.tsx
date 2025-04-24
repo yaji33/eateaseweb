@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 
-// Map container style
+interface LocationPickerProps {
+  location: {
+    lat: number;
+    lng: number;
+  };
+  onLocationSelect: (location: { lat: number; lng: number }) => Promise<void>;
+  readOnly?: boolean; 
+}
+
 const containerStyle = {
   width: "100%",
   height: "400px",
 };
 
-const LocationPicker = ({ location, businessName }) => {
+const LocationPicker: React.FC<LocationPickerProps> = ({ location, businessName }) => {
   return (
     <MapContainer center={location} zoom={15} style={containerStyle}>
       <TileLayer
@@ -34,7 +42,7 @@ export default function LocationPage() {
     lng: 123.7333,
   });
 
-  const [businessName, setBusinessName] = useState("Mac&Gab Food Hub"); // Replace with the actual business name
+  const [businessName, setBusinessName] = useState("Mac&Gab Food Hub"); 
 
   useEffect(() => {
     // Check if geolocation is available

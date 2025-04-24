@@ -33,6 +33,7 @@ function Navbar() {
     { to: "/business-orders", label: "Orders" },
     { to: "/business-menu", label: "Menu" },
     { to: "/business-transactions", label: "Transactions" },
+    
   ];
 
   const handleChatClick = (chat) => {
