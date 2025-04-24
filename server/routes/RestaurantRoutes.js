@@ -58,13 +58,12 @@ router.post("/", async (req, res) => {
     if (!businessRole)
       return res.status(500).json({ error: "Business role not found" });
 
-    // Create a new user for business owner
     const newUser = new User({
       owner_name,
       email,
       password: hashedPassword,
       role_id: businessRole.id,
-      business_id: savedRestaurant._id, // Link business ID
+      business_id: savedRestaurant._id, 
     });
 
     await newUser.save();
