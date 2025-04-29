@@ -8,25 +8,37 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Selection from "@/components/business/combo-box";
+import ComboboxDemo from "@/components/business/combo-box";
 import EditIcon from "@/assets/edit.svg";
+import axios from "axios";
+
+interface MenuData {
+  title: string;
+  price: number;
+  image: File | null;
+  imagePreview: string;
+  category_id: number;
+}
 
 interface EditMenuModalProps {
   food: {
+    _id: string;
     title: string;
     price: number;
     image: string;
-    category?: string;
+    category_id: number;
   };
+  onItemUpdated: () => void;
 }
 
-export default function EditMenuModal({ food }: EditMenuModalProps) {
-  const [menuData, setMenuData] = useState({
+export default function EditMenuModal({ food, onItemUpdated }: EditMenuModalProps) {
+  const [menuData, setMenuData] = useState<MenuData>({
     title: food.title,
     price: food.price,
     image: null,
     imagePreview: food.image,
-  });
+    category_id: food.category_id, // Add this properly now
+  });  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMenuData({ ...menuData, [e.target.name]: e.target.value });
@@ -43,9 +55,53 @@ export default function EditMenuModal({ food }: EditMenuModalProps) {
     }
   };
 
-  const handleSubmit = () => {
-    console.log("Updated Menu Item:", menuData);
-  };
+  const handleSubmit = async () => {
+    try {
+      const token = localStorage.getItem("token");
+  
+      const payload: any = {
+        title: menuData.title,
+        price: menuData.price,
+        category_id: menuData.category_id,
+      };
+  
+      if (menuData.image) {
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const base64String = (reader.result as string).split(",")[1];
+          payload.imageBase64 = base64String;
+  
+          await axios.patch(`http://localhost:5001/api/menu/${food._id}`, payload, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+  
+          alert("Menu item updated successfully!");
+        };
+        reader.readAsDataURL(menuData.image);
+      } else {
+        await axios.patch(`http://localhost:5001/api/menu/${food._id}`, payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        onItemUpdated(); 
+        alert("Menu item updated successfully!");
+      }
+    } catch (err) {
+      console.error("Failed to update menu item", err);
+      alert("Error updating menu item.");
+    }
+  };  
+
+  const handleCategoryChange = (categoryId: number) => {
+    setMenuData((prev) => ({
+      ...prev,
+      category_id: categoryId,
+    }));
+  };  
 
   return (
     <Dialog>
@@ -93,7 +149,8 @@ export default function EditMenuModal({ food }: EditMenuModalProps) {
               className="cursor-pointer"
             />
           </div>
-          <Selection />
+
+          <ComboboxDemo onCategorySelect={handleCategoryChange} />
         </div>
 
         <div className="flex justify-end mt-4 gap-2">

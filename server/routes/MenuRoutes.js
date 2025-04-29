@@ -88,4 +88,48 @@ router.post(
   }
 );
 
+router.patch("/:id", authMiddleware, businessMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, price, category_id, imageBase64 } = req.body;
+
+    const menuItem = await Menu.findOne({
+      _id: id,
+      restaurant_id: req.user.business_id,
+    });
+
+    if (!menuItem) {
+      return res.status(404).json({ error: "Menu item not found" });
+    }
+
+    if (title) menuItem.name = title;
+    if (price) menuItem.price = price;
+    if (category_id) menuItem.category_id = category_id;
+
+    if (imageBase64) {
+      const uploadResult = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: "eatease/menu" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+
+        const streamifier = require("streamifier");
+        streamifier.createReadStream(Buffer.from(imageBase64, "base64")).pipe(uploadStream);
+      });
+
+      menuItem.image_url = uploadResult.secure_url;
+    }
+
+    const updatedItem = await menuItem.save();
+
+    res.json(updatedItem);
+  } catch (err) {
+    console.error("❌ Error updating menu item:", err.message);
+    res.status(500).json({ error: "Server error while updating menu item" });
+  }
+});
+
 module.exports = router;

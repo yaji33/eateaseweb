@@ -88,9 +88,18 @@ export default function Page() {
   };
 
   const filteredFoods = (category: string) => {
+    const categoryMap: Record<string, number> = {
+      "rice meals": 1,
+      "pasta": 2,
+      "snacks": 3,
+      "drinks": 4,
+      "coffee": 5,
+      "other": 6,
+    };    
+
     return foods.filter((food) => {
       const matchesSearch = food.title.toLowerCase().includes(searchTerm);
-      const matchesCategory = category === "all" || food.category === category;
+      const matchesCategory = category === "all" || food.category_id === categoryMap[category];
       return matchesSearch && matchesCategory;
     });
   };
@@ -194,12 +203,13 @@ export default function Page() {
             .filter((food) => {
               const categoryMap: Record<string, number> = {
                 "rice meals": 1,
-                pasta: 2,
-                snacks: 3,
-                drinks: 4,
-                coffee: 5,
-                other: 6,
+                "pasta": 2,
+                "snacks": 3,
+                "drinks": 4,
+                "coffee": 5,
+                "other": 6,
               };
+              
 
               const matchesCategory =
                 selectedCategory === "all" ||
@@ -217,8 +227,12 @@ export default function Page() {
                 className="flex flex-col border rounded-lg p-2 bg-white shadow-md"
               >
                 <div className="flex justify-between p-2">
-                  <Checkbox />
-                  <EditMenu food={food} />
+                <Checkbox
+                  checked={selectedItems.includes(food._id)}
+                  onCheckedChange={() => toggleSelectItem(food._id)}
+                />
+
+                <EditMenu food={food} onItemUpdated={fetchMenuItems} />
                 </div>
                 <FoodCard {...food} />
               </div>
