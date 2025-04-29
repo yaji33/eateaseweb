@@ -72,7 +72,7 @@ function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 w-full flex p-1 bg-white shadow-sm px-2 sm:px-8 z-50 justify-between">
+    <nav className="fixed top-0 w-full flex p-2 bg-white shadow-sm px-2 sm:px-8 z-50 justify-between">
       <div className="w-full max-w-5xl mx-auto flex justify-between items-center">
         <NavLink to="/business-home" className="flex items-center gap-2">
           <img src={Logo} alt="logo" className="w-10" />
