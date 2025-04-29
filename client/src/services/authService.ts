@@ -9,6 +9,10 @@ interface LoginResponse {
   user: User;
 }
 
+interface ErrorResponse {
+  message?: string;
+}
+
 export const loginUser = async (
   email: string,
   password: string
@@ -22,21 +26,21 @@ export const loginUser = async (
       body: JSON.stringify({ email, password }),
     });
 
-    console.log("Raw response:", response); 
+    console.log("Raw response:", response);
 
-    const data: LoginResponse = await response.json();
+    const data = await response.json();
 
-    if (!response.ok)
-      throw new Error(data.user ? data.user.email : "Login failed");
+    if (!response.ok) {
+      const errorMessage = data && data.message ? data.message : "Login failed";
+      throw new Error(errorMessage);
+    }
 
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
 
     return data;
   } catch (error) {
-    console.error("Login error:", error); 
-    throw new Error(
-      error instanceof Error ? error.message : "An error occurred"
-    );
+    console.error("Login error:", error);
+    throw error;
   }
 };

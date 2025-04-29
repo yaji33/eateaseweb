@@ -250,7 +250,6 @@ router.put("/profile", authMiddleware, businessMiddleware, async (req, res) => {
 
 router.get("/profile", authMiddleware, businessMiddleware, async (req, res) => {
   try {
-    // Get the business_id from the authenticated user
     const user = req.user;
 
     if (!user.business_id) {
@@ -258,8 +257,6 @@ router.get("/profile", authMiddleware, businessMiddleware, async (req, res) => {
         .status(404)
         .json({ message: "No business associated with this account" });
     }
-
-    // Find restaurant by business_id
     const restaurant = await Restaurant.findById(user.business_id);
 
     if (!restaurant) {

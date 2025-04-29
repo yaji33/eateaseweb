@@ -1,27 +1,27 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Logo from "@/assets/logo.png";
-import "@/index.css";
-import { loginUser } from "@/services/authService";
-
 import { useAuthStore } from "@/state/authStore";
+import { loginUser } from "@/services/authService";
+import Logo from "@/assets/logo.png";
+import { motion } from "framer-motion";
+import toast, { Toaster } from "react-hot-toast";
+import Navbar from "@/components/public/navbar";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuthStore();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-
-    console.log("Attempting login with:", { email, password });
+    setIsLoading(true);
 
     try {
       const response = await loginUser(email, password);
-      console.log("Login successful:", response);
 
       const user = {
         id: response.id,
@@ -29,100 +29,167 @@ const Login = () => {
         role: response.role_id === 1 ? "admin" : "business",
         token: response.token,
       };
+
+      toast.success("Login successful!");
       login(user, navigate);
     } catch (err) {
       console.error("Login error:", err);
-      setError("Invalid email or password");
+
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-white flex-col font-poppins px-4">
-      <div className="flex items-center my-8 sm:my-12">
-        <img src={Logo} alt="logo" className="w-10 sm:w-12" />
-        <h1 className="font-bold text-2xl sm:text-3xl">
-          <span className="text-brandPrimary">E</span>
-          <span className="text-brandSecondary">Portal</span>
-        </h1>
-      </div>
-      <div className="w-full max-w-sm sm:max-w-md flex flex-col items-center sm:text-center">
-        <h1 className="font-medium text-lg  my-6">Login to your account</h1>
-
-        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-
-        <form onSubmit={handleLogin} className="flex flex-col w-full">
-          <div className="gap-3 w-full flex flex-col text-xs">
-            <input
-              type="email"
-              name="email"
-              id="email"
-              placeholder="Email"
-              className="border p-4 rounded-md"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
-
-            <input
-              type="password"
-              name="password"
-              id="password"
-              placeholder="Password"
-              className="border p-4 rounded-md"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-            />
-
-            <button
-              className="mb-6 text-right text-xs text-buttonPrimary"
-              type="button"
-              onClick={() => navigate("/reset-password")}
+    <>
+      <Toaster position="top-center" reverseOrder={false} />
+      <Navbar />
+      <div className="min-h-screen flex flex-col bg-gray-50">
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="w-full max-w-md">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="bg-white shadow-md rounded-lg p-8"
             >
-              Forgot your password?
-            </button>
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Welcome back
+                </h2>
+                <p className="text-gray-600 mt-2">
+                  Sign in to your restaurant account
+                </p>
+              </div>
+
+              {error && (
+                <div className="mb-6 p-4 rounded-md bg-red-50 border-l-4 border-red-500 text-red-700">
+                  <p className="text-sm font-medium">{error}</p>
+                  {error.includes("pending approval") && (
+                    <p className="text-xs mt-1">
+                      Our team is reviewing your application. This usually takes
+                      1-2 business days.
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <form onSubmit={handleLogin} className="space-y-6">
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Email Address
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brandPrimary focus:border-transparent transition"
+                    placeholder="yourname@example.com"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label
+                      htmlFor="password"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Password
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => navigate("/reset-password")}
+                      className="text-xs text-brandPrimary hover:text-brandSecondary"
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+                  <input
+                    id="password"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brandPrimary focus:border-transparent transition"
+                    placeholder="••••••••"
+                  />
+                </div>
+
+                <div className="flex items-center">
+                  <input
+                    id="remember_me"
+                    type="checkbox"
+                    className="h-4 w-4 text-brandPrimary border-gray-300 rounded focus:ring-brandPrimary"
+                  />
+                  <label
+                    htmlFor="remember_me"
+                    className="ml-2 block text-sm text-gray-700"
+                  >
+                    Remember me
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-buttonPrimary hover:bg-brandPrimary text-white py-3 rounded-md font-medium transition duration-200 ease-in-out"
+                >
+                  {isLoading ? (
+                    <span className="flex items-center justify-center">
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Signing in...
+                    </span>
+                  ) : (
+                    "Sign in"
+                  )}
+                </button>
+              </form>
+
+              <div className="mt-8 text-center">
+                <p className="text-sm text-gray-600">
+                  Don't have an account?{" "}
+                  <button
+                    onClick={() => navigate("/registration")}
+                    className="font-medium text-brandPrimary hover:text-brandSecondary"
+                  >
+                    Register now
+                  </button>
+                </p>
+              </div>
+            </motion.div>
           </div>
-
-          <button
-            type="submit"
-            className="bg-buttonPrimary text-white py-3 rounded-md text-center w-full font-medium text-sm"
-          >
-            Login
-          </button>
-        </form>
-        <p className="text-xs text-center py-3 sm:w-full">
-          By continuing you agree to our
-          <button
-            className="text-buttonHighlight mx-1 cursor-pointer"
-            onClick={() => navigate("/terms")}
-          >
-            {" "}
-            terms of use
-          </button>
-          and
-          <span
-            className="text-buttonHighlight mx-1 cursor-pointer"
-            onClick={() => navigate("/privacy-policy")}
-          >
-            {" "}
-            privacy policy
-          </span>
-          .
-        </p>
-
-        <div className="flex items-center gap-1 text-sm justify-center w-full my-4 mt-10">
-          <p>Don't have an account?</p>
-          <button
-            className="text-buttonPrimary font-medium"
-            onClick={() => navigate("/registration")}
-          >
-            Partner with us!
-          </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
