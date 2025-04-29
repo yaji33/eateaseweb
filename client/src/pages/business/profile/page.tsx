@@ -553,7 +553,7 @@ export default function Page() {
               <img
                 src={businessData.restaurant_photo}
                 alt="Restaurant Banner"
-                className="w-full h-72 object-cover"
+                className="w-full object-cover"
               />
             </div>
           )}
