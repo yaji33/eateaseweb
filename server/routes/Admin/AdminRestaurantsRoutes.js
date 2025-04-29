@@ -5,6 +5,7 @@ const {
   adminMiddleware,
 } = require("../../middleware/authMiddleware");
 const router = express.Router();
+const sendEmail = require("../../utility/sendEmail");
 
 router.get(
   "/restaurants",
@@ -47,21 +48,80 @@ router.put(
         return res.status(400).json({ error: "Status is required" });
       }
 
-      const restaurant = await Restaurant.findByIdAndUpdate(
-        id,
-        { status },
-        { new: true, select: "name owner_name email status" }
-      );
+  
+      const restaurantCheck = await Restaurant.findById(id);
 
-      if (!restaurant) {
+      if (!restaurantCheck) {
         return res.status(404).json({ error: "Restaurant not found" });
       }
 
-      const io = req.app.get("io"); 
+
+      const restaurant = await Restaurant.findByIdAndUpdate(
+        id,
+        { status },
+        { new: true }
+      );
+
+      console.log("Restaurant data:", {
+        id: restaurant._id,
+        name: restaurant.name,
+        owner_name: restaurant.owner_name,
+        email: restaurant.email,
+        status: restaurant.status,
+      });
+
+      const io = req.app.get("io");
       io.emit("restaurantStatusUpdated", {
         id: restaurant._id,
         status: restaurant.status,
       });
+
+      const statusMessage =
+        status === 1
+          ? "Pending"
+          : status === 2
+          ? "Active"
+          : status === 3
+          ? "Banned"
+          : `${status}`;
+
+      let statusDescription = "";
+      if (status === 1) {
+        statusDescription =
+          "Your restaurant registration is currently under review. We'll notify you once it's approved.";
+      } else if (status === 2) {
+        statusDescription =
+          "Congratulations! Your restaurant has been approved and is now active on our platform.";
+      } else if (status === 3) {
+        statusDescription =
+          "We regret to inform you that your restaurant registration has been banned due to policy violations. Please contact support for more information.";
+      }
+
+      if (restaurant.name && restaurant.owner_name && restaurant.email) {
+        await sendEmail({
+          to: restaurant.email,
+          subject: `Your Restaurant's Status Update - ${statusMessage}`,
+          text:
+            `Hi ${restaurant.owner_name},\n\n` +
+            `We wanted to inform you that the status of your restaurant registration for ${restaurant.name} has been updated to ${statusMessage}.\n\n` +
+            `${statusDescription}\n\n` +
+            `Thank you for your patience, and please let us know if you have any questions.\n\n` +
+            `Best regards,\nThe EatEase Team`,
+          html:
+            `<p>Hi ${restaurant.owner_name},</p>` +
+            `<p>We wanted to inform you that the status of your restaurant registration for <strong>${restaurant.name}</strong> has been updated to <strong>${statusMessage}</strong>.</p>` +
+            `<p>${statusDescription}</p>` +
+            `<p>Thank you for your patience, and please let us know if you have any questions.</p>` +
+            `<p>Best regards,<br>The EatEase Team</p>`,
+        });
+        console.log("Email sent successfully to:", restaurant.email);
+      } else {
+        console.warn("Skipping email — missing name, owner_name, or email:", {
+          name: restaurant.name,
+          owner_name: restaurant.owner_name,
+          email: restaurant.email,
+        });
+      }
 
       res.json(restaurant);
     } catch (error) {
@@ -70,6 +130,7 @@ router.put(
     }
   }
 );
+
 router.get(
   "/restaurants/:id",
   authMiddleware,
