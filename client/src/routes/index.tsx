@@ -5,6 +5,7 @@ import ProtectedRoute from "./protectedRoutes";
 import Dashboard from "@/pages/dashboard";
 import Eateries from "@/pages/admin/eateries/page";
 import Login from "@/pages/auth/login";
+import LandingPage from "@/pages/public/landing-page/page";
 import ResetPassword from "@/pages/auth/reset-password";
 import Terms from "@/pages/public/Terms";
 import Privacy from "@/pages/public/Privacy";
@@ -14,14 +15,15 @@ import BusinessDashboard from "@/pages/business/dashboard/page";
 import BusinessOrders from "@/pages/business/orders/page";
 import BusinessMenu from "@/pages/business/menu/page";
 import BusinessTransactions from "@/pages/business/transactions/page";
-
+import NotFound from "@/pages/notFound";
 import BusinessProfile from "@/pages/business/profile/page";
 import BusinessMessages from "@/pages/business/messages/page";
 
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<Navigate to="/landing-page" replace />} />
+      <Route path="/landing-page" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/registration" element={<Registration />} />
@@ -56,16 +58,14 @@ const AppRoutes = () => {
         path="/business-transactions"
         element={<ProtectedRoute element={<BusinessTransactions />} />}
       />
-      
+
       <Route
         path="/business-profile"
         element={<ProtectedRoute element={<BusinessProfile />} />}
       />
-      <Route
-        path="/business-messages"
-        element={<ProtectedRoute element={<BusinessMessages />} />}
-      />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="/not-found" element={<NotFound />} />
+
+      <Route path="*" element={<Navigate to="/not-found" replace />} />
     </Routes>
   );
 };
