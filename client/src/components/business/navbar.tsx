@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useChat } from "@/context/ChatContext";
+import axios from "axios";
 import Logo from "@/assets/logo.png";
 import ChatIcon from "@/assets/ep_chat-round.svg";
 import NotificationIcon from "@/assets/ion_notifications-outline.svg";
@@ -14,6 +15,7 @@ function Navbar() {
   const notifRef = useRef(null);
   const chatRef = useRef(null);
   const navigate = useNavigate();
+  const [businessProfile, setBusinessProfile] = useState<string | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -24,6 +26,35 @@ function Navbar() {
         setIsChatOpen(false);
       }
     };
+
+    const fetchBusinessProfile = async () => {
+      try {
+        // Get the auth token from localStorage
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          console.error("No authentication token found");
+          return;
+        }
+
+        // Make a direct API call to get the restaurant profile
+        const response = await axios.get(
+          "http://localhost:5001/api/restaurants/profile",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        // Set the business profile image from the correct field
+        setBusinessProfile(response.data.business_profile);
+      } catch (error) {
+        console.error("Failed to fetch business profile image:", error);
+      }
+    };
+
+    fetchBusinessProfile();
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -33,7 +64,6 @@ function Navbar() {
     { to: "/business-orders", label: "Orders" },
     { to: "/business-menu", label: "Menu" },
     { to: "/business-transactions", label: "Transactions" },
-    
   ];
 
   const handleChatClick = (chat) => {
@@ -117,7 +147,17 @@ function Navbar() {
             )}
           </div>
           <NavLink to="/business-profile">
-            <img src={ShopIcon} alt="shop" className="w-5" />
+            {businessProfile ? (
+              <img
+                src={businessProfile}
+                alt="Business Profile"
+                className="w-5 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                <span className="text-gray-600 text-xs">BP</span>
+              </div>
+            )}
           </NavLink>
         </div>
       </div>

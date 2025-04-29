@@ -5,6 +5,9 @@ import Logo from "@/assets/logo-1.png";
 import "@/index.css";
 import Illustration from "@/assets/illustration.png";
 import Phone from "@/components/phone-input";
+import toast, { Toaster } from "react-hot-toast";
+import { motion } from "framer-motion";
+
 import { Label } from "recharts";
 
 const Registration = () => {
@@ -22,32 +25,41 @@ const Registration = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    
 
     try {
+      const registrationData = {
+        owner_name: fullName,
+        name,
+        address: {
+          street,
+          city,
+          province,
+          zip,
+          coordinates: {
+            latitude: null,
+            longitude: null,
+          },
+        },
+        contact,
+        operating_hours: { open: openTime, close: closeTime },
+        email,
+        password,
+      };
+
       const response = await axios.post(
         "http://localhost:5001/api/restaurants",
-        {
-          owner_name: fullName,
-          name,
-          address: { street, city, province, zip },
-          contact,
-          operating_hours: { open: openTime, close: closeTime },
-          email,
-          password,
-        }
+        registrationData
       );
 
-      alert("Registration successful!");
+      toast.success("Registration successful!");
       navigate("/login");
     } catch (err: any) {
-      setError(err.response?.data?.error || "Something went wrong");
+      toast.error(err.response?.data?.error || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -55,6 +67,7 @@ const Registration = () => {
 
   return (
     <>
+      <Toaster position="top-center" reverseOrder={false} />
       <nav className="fixed top-0 w-full flex justify-between items-center p-3 bg-white shadow-sm px-2 sm:px-8 z-50">
         <div className="flex items-center">
           <img src={Logo} alt="logo" className="w-6" />
@@ -76,7 +89,12 @@ const Registration = () => {
       <div className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-background font-poppins px-4 pt-20">
         <div className="flex flex-col sm:flex-row gap-7 sm:justify-between w-full max-w-6xl">
           {/* Registration Form */}
-          <div className="w-full sm:w-full max-w-sm bg-white p-6 rounded-lg shadow-md h-auto md:w-1/2 form-container">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="w-full sm:w-full max-w-sm bg-white p-6 rounded-lg shadow-md h-auto md:w-1/2 form-container"
+          >
             <h1 className="font-medium text-lg my-6">
               Create your business account
             </h1>
@@ -202,13 +220,13 @@ const Registration = () => {
 
               <button
                 type="submit"
-                className="bg-buttonPrimary text-white py-3 rounded-md text-center w-full font-medium text-sm mt-14"
+                className="bg-buttonPrimary text-white py-3 rounded-md text-center w-full font-medium text-sm mt-14 "
                 disabled={loading}
               >
                 {loading ? "Registering..." : "Get in touch now!"}
               </button>
             </form>
-          </div>
+          </motion.div>
 
           {/* Promotional Text Section */}
           <div className="w-full text-center sm:text-left px-4 mt-8 sm:mt-0 ">

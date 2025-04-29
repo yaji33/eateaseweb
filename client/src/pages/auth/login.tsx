@@ -11,7 +11,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { login } = useAuthStore(); 
+  const { login } = useAuthStore();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,17 +30,14 @@ const Login = () => {
         token: response.token,
       };
       login(user, navigate);
-
     } catch (err) {
       console.error("Login error:", err);
       setError("Invalid email or password");
     }
   };
 
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-white flex-col font-poppins px-4">
-      {/* Logo */}
       <div className="flex items-center my-8 sm:my-12">
         <img src={Logo} alt="logo" className="w-10 sm:w-12" />
         <h1 className="font-bold text-2xl sm:text-3xl">
@@ -48,8 +45,6 @@ const Login = () => {
           <span className="text-brandSecondary">Portal</span>
         </h1>
       </div>
-
-      {/* Login Form */}
       <div className="w-full max-w-sm sm:max-w-md flex flex-col items-center sm:text-center">
         <h1 className="font-medium text-lg  my-6">Login to your account</h1>
 
@@ -81,7 +76,9 @@ const Login = () => {
               autoComplete="current-password"
             />
 
-            <button className="mb-6 text-right text-xs text-buttonPrimary"
+            <button
+              className="mb-6 text-right text-xs text-buttonPrimary"
+              type="button"
               onClick={() => navigate("/reset-password")}
             >
               Forgot your password?
@@ -95,18 +92,18 @@ const Login = () => {
             Login
           </button>
         </form>
-
-        {/* Terms & Policy */}
         <p className="text-xs text-center py-3 sm:w-full">
           By continuing you agree to our
-          <button className="text-buttonHighlight mx-1 cursor-pointer"
+          <button
+            className="text-buttonHighlight mx-1 cursor-pointer"
             onClick={() => navigate("/terms")}
           >
             {" "}
             terms of use
           </button>
           and
-          <span className="text-buttonHighlight mx-1 cursor-pointer"
+          <span
+            className="text-buttonHighlight mx-1 cursor-pointer"
             onClick={() => navigate("/privacy-policy")}
           >
             {" "}
@@ -115,7 +112,6 @@ const Login = () => {
           .
         </p>
 
-        {/* Signup Redirect */}
         <div className="flex items-center gap-1 text-sm justify-center w-full my-4 mt-10">
           <p>Don't have an account?</p>
           <button

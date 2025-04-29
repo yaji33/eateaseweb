@@ -37,7 +37,7 @@ export default function EditMenuModal({ food, onItemUpdated }: EditMenuModalProp
     price: food.price,
     image: null,
     imagePreview: food.image,
-    category_id: food.category_id, // Add this properly now
+    category_id: food.category_id, 
   });  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

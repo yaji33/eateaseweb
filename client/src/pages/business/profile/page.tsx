@@ -6,23 +6,24 @@ import { Button } from "@/components/ui/button";
 import LocationPicker from "@/components/business/GeoMapping";
 
 interface BusinessData {
-  businessName: string;
-  location: {
-    lat: number;
-    lng: number;
-    address: string;
+  name: string; // Changed from businessName to match schema
+  address: {
+    street: string;
+    city: string;
+    province: string;
+    zip: string;
+    coordinates: {
+      latitude: number | null;
+      longitude: number | null;
+    };
   };
-  businessProfile: string | null;
-  businessBanner: string | null;
   contact: string;
-  openingHours: {
-    monday: string;
-    tuesday: string;
-    wednesday: string;
-    thursday: string;
-    friday: string;
-    saturday: string;
-    sunday: string;
+  business_profile: string; // Changed from businessProfile to match schema
+  restaurant_photo: string; // Added to match schema
+  restaurant_description: string; // Optional field
+  operating_hours: {
+    open: string; // Changed from day-specific to match schema
+    close: string; // Changed from day-specific to match schema
   };
   logo: File | null;
   logoPreview: string | null;
@@ -39,23 +40,24 @@ export default function Page() {
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [businessData, setBusinessData] = useState<BusinessData>({
-    businessName: "",
-    location: {
-      lat: 13.1339,
-      lng: 123.7333,
-      address: "",
+    name: "",
+    address: {
+      street: "",
+      city: "",
+      province: "",
+      zip: "",
+      coordinates: {
+        latitude: null,
+        longitude: null,
+      },
     },
-    businessProfile: null,
-    businessBanner: null,
     contact: "",
-    openingHours: {
-      monday: "",
-      tuesday: "",
-      wednesday: "",
-      thursday: "",
-      friday: "",
-      saturday: "",
-      sunday: "",
+    business_profile: "",
+    restaurant_photo: "",
+    restaurant_description: "",
+    operating_hours: {
+      open: "",
+      close: "",
     },
     logo: null,
     logoPreview: null,
@@ -80,7 +82,7 @@ export default function Page() {
         }
 
         const response = await axios.get(
-          "http://localhost:5001/api/restaurant_dummy/profile",
+          "http://localhost:5001/api/restaurants/profile",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -93,28 +95,30 @@ export default function Page() {
 
         // Update the businessData state with fetched data
         setBusinessData({
-          businessName: response.data.name || "",
-          location: {
-            lat: response.data.address?.coordinates?.latitude || 13.1339,
-            lng: response.data.address?.coordinates?.longitude || 123.7333,
-            address: response.data.address?.text || "",
+          name: response.data.name || "",
+          address: {
+            street: response.data.address?.street || "",
+            city: response.data.address?.city || "",
+            province: response.data.address?.province || "",
+            zip: response.data.address?.zip || "",
+            coordinates: {
+              latitude: response.data.address?.coordinates?.latitude || 13.1339,
+              longitude:
+                response.data.address?.coordinates?.longitude || 123.7333,
+            },
           },
           contact: response.data.contact || "",
-          openingHours: {
-            monday: response.data.operating_hours?.monday || "",
-            tuesday: response.data.operating_hours?.tuesday || "",
-            wednesday: response.data.operating_hours?.wednesday || "",
-            thursday: response.data.operating_hours?.thursday || "",
-            friday: response.data.operating_hours?.friday || "",
-            saturday: response.data.operating_hours?.saturday || "",
-            sunday: response.data.operating_hours?.sunday || "",
+          operating_hours: {
+            open: response.data.operating_hours?.open || "",
+            close: response.data.operating_hours?.close || "",
           },
           logo: null,
           logoPreview: null,
           coverImage: null,
           coverImagePreview: null,
-          businessProfile: response.data.business_profile || "",
-          businessBanner: response.data.business_banner || "",
+          business_profile: response.data.business_profile || "",
+          restaurant_photo: response.data.restaurant_photo || "",
+          restaurant_description: response.data.restaurant_description || "",
         });
 
         setLoading(false);
@@ -131,17 +135,36 @@ export default function Page() {
   }, []);
 
   const handleChange = (e) => {
-    setBusinessData({ ...businessData, [e.target.name]: e.target.value });
-  };
-
-  const handleOperatingHoursChange = (day: string, value: string) => {
-    setBusinessData((prev) => ({
-      ...prev,
-      openingHours: {
-        ...prev.openingHours,
-        [day]: value,
-      },
-    }));
+    const { name, value } = e.target;
+    setBusinessData((prev) => {
+      // Handle nested address fields
+      if (name.startsWith("address.")) {
+        const addressField = name.split(".")[1];
+        return {
+          ...prev,
+          address: {
+            ...prev.address,
+            [addressField]: value,
+          },
+        };
+      }
+      // Handle nested operating hours
+      else if (name.startsWith("hours.")) {
+        const hoursField = name.split(".")[1];
+        return {
+          ...prev,
+          operating_hours: {
+            ...prev.operating_hours,
+            [hoursField]: value,
+          },
+        };
+      }
+      // Handle direct fields
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
   };
 
   const handleLocationSelect = async (location: {
@@ -153,11 +176,28 @@ export default function Page() {
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.lat}&lon=${location.lng}`
     );
     const data = await response.json();
-    const address = data.display_name || "Unknown Address";
+
+    // Extract address components from the response
+    const addressComponents = {
+      street: data.address?.road || "",
+      city: data.address?.city || data.address?.town || "",
+      province: data.address?.state || data.address?.county || "",
+      zip: data.address?.postcode || "",
+    };
 
     setBusinessData((prevData) => ({
       ...prevData,
-      location: { lat: location.lat, lng: location.lng, address },
+      address: {
+        ...prevData.address,
+        street: addressComponents.street || prevData.address.street,
+        city: addressComponents.city || prevData.address.city,
+        province: addressComponents.province || prevData.address.province,
+        zip: addressComponents.zip || prevData.address.zip,
+        coordinates: {
+          latitude: location.lat,
+          longitude: location.lng,
+        },
+      },
     }));
   };
 
@@ -207,19 +247,27 @@ export default function Page() {
         return;
       }
 
-      // Prepare the base data
+      // Prepare the data to match the backend schema
       const updateData = {
-        name: businessData.businessName,
-
+        name: businessData.name,
+        business_profile: businessData.business_profile,
+        restaurant_photo: businessData.restaurant_photo,
+        restaurant_description: businessData.restaurant_description,
         contact: businessData.contact,
         address: {
-          text: businessData.location.address,
+          street: businessData.address.street || "",
+          city: businessData.address.city || "",
+          province: businessData.address.province || "",
+          zip: businessData.address.zip || "",
           coordinates: {
-            latitude: businessData.location.lat,
-            longitude: businessData.location.lng,
+            latitude: businessData.address.coordinates?.latitude,
+            longitude: businessData.address.coordinates?.longitude,
           },
         },
-        operating_hours: businessData.openingHours,
+        operating_hours: {
+          open: businessData.operating_hours.open,
+          close: businessData.operating_hours.close,
+        },
       };
 
       // Handle logo upload if changed
@@ -236,7 +284,7 @@ export default function Page() {
 
       // Send the update request
       const response = await axios.put(
-        "http://localhost:5001/api/restaurant_dummy/profile",
+        "http://localhost:5001/api/restaurants/profile",
         updateData,
         {
           headers: {
@@ -249,15 +297,15 @@ export default function Page() {
       // Update the restaurant data with the response
       setRestaurant(response.data);
 
-      // Reset the file inputs
+      // Reset the file inputs and update state with response data
       setBusinessData((prevData) => ({
         ...prevData,
         logo: null,
         coverImage: null,
-        businessProfile:
-          response.data.business_profile || prevData.businessProfile,
-        businessBanner:
-          response.data.business_banner || prevData.businessBanner,
+        business_profile:
+          response.data.business_profile || prevData.business_profile,
+        restaurant_photo:
+          response.data.restaurant_photo || prevData.restaurant_photo,
       }));
 
       setSaving(false);
@@ -312,26 +360,17 @@ export default function Page() {
       console.log("Geolocation is not available in this browser.");
     }
   };
+  const getFormattedAddress = () => {
+    if (!businessData.address) return "No address available";
 
-  const getDaySchedule = () => {
-    // Get current day of the week
-    const days = [
-      "sunday",
-      "monday",
-      "tuesday",
-      "wednesday",
-      "thursday",
-      "friday",
-      "saturday",
-    ];
-    const today = days[new Date().getDay()];
-    return businessData.openingHours[today] || "Closed";
+    const { street, city, province, zip } = businessData.address;
+    return [street, city, province, zip].filter(Boolean).join(", ");
   };
 
   if (loading)
     return (
       <div className="flex w-full max-w-5xl mx-auto flex-col min-h-screen bg-background_1 font-poppins px-4 pt-20 gap-5">
-        <h1 className="font-semibold text-xl">Profile Page</h1>
+        <h1 className="font-semibold text-xl">Restaurant Profile</h1>
         <div className="text-center py-10">Loading restaurant data...</div>
       </div>
     );
@@ -339,44 +378,83 @@ export default function Page() {
   if (error)
     return (
       <div className="flex w-full max-w-5xl mx-auto flex-col min-h-screen bg-background_1 font-poppins px-4 pt-20 gap-5">
-        <h1 className="font-semibold text-xl">Profile Page</h1>
+        <h1 className="font-semibold text-xl">Restaurant Profile</h1>
         <div className="text-center py-10 text-red-500">Error: {error}</div>
       </div>
     );
 
   return (
     <div className="flex w-full max-w-5xl mx-auto flex-col min-h-screen bg-background_1 font-poppins px-4 pt-20 gap-5">
-      <h1 className="font-semibold text-xl">Profile Page</h1>
+      <h1 className="font-semibold text-xl">Restaurant Profile</h1>
       {isEditing ? (
         <div className="flex flex-col bg-white p-5 rounded-md shadow-md">
           <Input
-            name="businessName"
-            placeholder="Business Name"
-            value={businessData.businessName}
+            name="name"
+            placeholder="Restaurant Name"
+            value={businessData.name}
             onChange={handleChange}
             className="mt-3"
           />
+
           <Textarea
-            name="description"
-            placeholder="Tell us about your business..."
-            value={businessData.description}
+            name="restaurant_description"
+            placeholder="Tell us about your restaurant..."
+            value={businessData.restaurant_description}
             onChange={handleChange}
             className="mt-3"
           />
+
+          <Input
+            name="contact"
+            placeholder="Contact Number"
+            value={businessData.contact}
+            onChange={handleChange}
+            className="mt-3"
+          />
+
+          <div className="mt-4">
+            <p className="font-medium mb-2">Address Information</p>
+            <div className="grid grid-cols-1 gap-2">
+              <Input
+                name="address.street"
+                placeholder="Street Address"
+                value={businessData.address.street}
+                onChange={handleChange}
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  name="address.city"
+                  placeholder="City"
+                  value={businessData.address.city}
+                  onChange={handleChange}
+                />
+                <Input
+                  name="address.province"
+                  placeholder="Province/State"
+                  value={businessData.address.province}
+                  onChange={handleChange}
+                />
+              </div>
+              <Input
+                name="address.zip"
+                placeholder="Zip/Postal Code"
+                value={businessData.address.zip}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
           <div className="mt-4">
             <p className="text-sm text-gray-600">Pick Your Location</p>
             <div className="map-container" style={{ height: "400px" }}>
               <LocationPicker
                 location={{
-                  lat: businessData.location.lat,
-                  lng: businessData.location.lng,
+                  lat: businessData.address.coordinates.latitude,
+                  lng: businessData.address.coordinates.longitude,
                 }}
                 onLocationSelect={handleLocationSelect}
               />
             </div>
-            <p className="text-gray-700 mt-2">
-              Selected Address: {businessData.location.address}
-            </p>
             <Button className="mt-3" onClick={getCurrentLocation}>
               Use My Current Location
             </Button>
@@ -384,34 +462,41 @@ export default function Page() {
 
           {/* Operating Hours Section */}
           <div className="mt-4">
-            <p className="text-sm text-gray-600">Operating Hours</p>
-            <div className="grid grid-cols-1 gap-2 mt-2">
-              {Object.keys(businessData.openingHours).map((day) => (
-                <div key={day} className="flex items-center">
-                  <span className="w-24 capitalize">{day}:</span>
-                  <Input
-                    value={businessData.openingHours[day]}
-                    onChange={(e) =>
-                      handleOperatingHoursChange(day, e.target.value)
-                    }
-                    placeholder="e.g. 9:00 AM - 5:00 PM"
-                    className="flex-1"
-                  />
-                </div>
-              ))}
+            <p className="font-medium mb-2">Operating Hours</p>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-sm text-gray-600">Opening Time</label>
+                <Input
+                  name="hours.open"
+                  type="time"
+                  value={businessData.operating_hours.open}
+                  onChange={handleChange}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-gray-600">Closing Time</label>
+                <Input
+                  name="hours.close"
+                  type="time"
+                  value={businessData.operating_hours.close}
+                  onChange={handleChange}
+                  className="mt-1"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="border p-2 rounded-md">
+          <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="border p-3 rounded-md">
               <p className="text-sm text-gray-600">
-                Upload Business Profile Image
+                Upload Restaurant Profile Image
               </p>
-              {(businessData.logoPreview || businessData.businessProfile) && (
+              {(businessData.logoPreview || businessData.business_profile) && (
                 <div className="mb-2">
                   <img
                     src={
-                      businessData.logoPreview || businessData.businessProfile
+                      businessData.logoPreview || businessData.business_profile
                     }
                     alt="Profile Preview"
                     className="w-24 h-24 object-cover rounded-md mt-2"
@@ -420,15 +505,15 @@ export default function Page() {
               )}
               <input type="file" name="logo" onChange={handleFileChange} />
             </div>
-            <div className="border p-2 rounded-md">
-              <p className="text-sm text-gray-600">Upload Business Banner</p>
+            <div className="border p-3 rounded-md">
+              <p className="text-sm text-gray-600">Upload Restaurant Banner</p>
               {(businessData.coverImagePreview ||
-                businessData.businessBanner) && (
+                businessData.restaurant_photo) && (
                 <div className="mb-2">
                   <img
                     src={
                       businessData.coverImagePreview ||
-                      businessData.businessBanner
+                      businessData.restaurant_photo
                     }
                     alt="Banner Preview"
                     className="w-full h-24 object-cover rounded-md mt-2"
@@ -463,38 +548,41 @@ export default function Page() {
       ) : (
         <>
           {/* Display Banner */}
-          {businessData.businessBanner && (
-            <div className="mt-4 rounded-md">
+          {businessData.restaurant_photo && (
+            <div className="mt-4 rounded-md overflow-hidden">
               <img
-                src={businessData.businessBanner}
-                alt="Business Banner"
-                className="w-full h-72 rounded-md object-cover"
+                src={businessData.restaurant_photo}
+                alt="Restaurant Banner"
+                className="w-full h-72 object-cover"
               />
             </div>
           )}
 
-          <div className="flex gap-5">
+          <div className="flex gap-5 mt-4">
             {/* Display Logo */}
-            {businessData.businessProfile && (
+            {businessData.business_profile && (
               <div>
                 <img
-                  src={businessData.businessProfile}
-                  alt="Business Logo"
-                  className="w-28 h-28 rounded-md object-cover mt-1"
+                  src={businessData.business_profile}
+                  alt="Restaurant Logo"
+                  className="w-28 h-28 rounded-full object-cover"
                 />
               </div>
             )}
-            <div className="rounded-md flex-1 ">
-              <p className="text-lg font-semibold ">
-                {businessData.businessName}
-              </p>
+            <div className="flex-1">
+              <h2 className="text-xl font-semibold">{businessData.name}</h2>
               <p className="mt-3">
                 📍 <span className="font-medium">Address:</span>{" "}
-                {businessData.location.address}
+                {getFormattedAddress()}
               </p>
               <p>
-                ⏰ <span className="font-medium">Today's Hours:</span>{" "}
-                {getDaySchedule()}
+                ⏰ <span className="font-medium">Hours:</span>{" "}
+                {businessData.operating_hours.open} -{" "}
+                {businessData.operating_hours.close}
+              </p>
+              <p>
+                📞 <span className="font-medium">Contact:</span>{" "}
+                {businessData.contact}
               </p>
               {restaurant && restaurant.rating > 0 && (
                 <p>
@@ -506,13 +594,23 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="rounded-md mt-4">
-            <p className="text-sm text-gray-600">Location on Map</p>
-            <div className="map-container" style={{ height: "400px" }}>
+          {/*businessData.business_profile && (
+            <div className="mt-4 ">
+              <h3 className="font-medium mb-2">About</h3>
+              <p>{businessData.restaurant_description}</p>
+            </div>
+          )*/}
+
+          <div className="mt-4">
+            <p className="text-sm text-gray-600 mb-2">Location on Map</p>
+            <div
+              className="map-container rounded-md overflow-hidden"
+              style={{ height: "400px" }}
+            >
               <LocationPicker
                 location={{
-                  lat: businessData.location.lat,
-                  lng: businessData.location.lng,
+                  lat: businessData.address.coordinates.latitude,
+                  lng: businessData.address.coordinates.longitude,
                 }}
                 onLocationSelect={() => {}} // Read-only in view mode
                 readOnly={true}
@@ -520,9 +618,12 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="flex justify-end py-3">
-            <Button variant="outline" onClick={() => setIsEditing(true)}>
-              Edit
+          <div className="flex justify-end py-5">
+            <Button
+              className="bg-activeBackgroundDark text-white hover:bg-opacity-90"
+              onClick={() => setIsEditing(true)}
+            >
+              Edit Profile
             </Button>
           </div>
         </>

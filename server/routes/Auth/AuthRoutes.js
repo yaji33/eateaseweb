@@ -1,7 +1,8 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const User = require("../../models/Business/User");
+const Restaurant = require("../../models/Business/Restaurant");
 
 const router = express.Router();
 
@@ -26,11 +27,26 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    // Check if the user is a business user (role_id: 3) and has an associated business
+    if (user.role_id === 3 && user.business_id) {
+      // Find the associated restaurant
+      const restaurant = await Restaurant.findById(user.business_id);
+
+      // If restaurant exists and status is 1, prevent login
+      if (restaurant && restaurant.status === 1) {
+        console.log("Restaurant account not approved yet:", email);
+        return res.status(403).json({
+          message:
+            "Your restaurant account is pending approval. Please wait for administrator approval.",
+        });
+      }
+    }
+
     const token = jwt.sign(
       { id: user._id, role_id: user.role_id, business_id: user.business_id },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
-    ); 
+    );
 
     res.json({ token, role_id: user.role_id });
   } catch (error) {
