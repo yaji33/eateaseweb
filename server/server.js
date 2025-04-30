@@ -9,9 +9,10 @@ const restaurantRoutes = require("./routes/Business/RestaurantRoutes");
 const authRoutes = require("./routes/Auth/AuthRoutes");
 const menuRoutes = require("./routes/Business/MenuRoutes");
 const adminRestaurantRoutes = require("./routes/Admin/AdminRestaurantsRoutes");
+const resetPasswordRoutes = require("./routes/Auth/ResetPassword");
 
 const app = express();
-const server = http.createServer(app); // Create server manually
+const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -32,6 +33,7 @@ mongoose
 
 app.use("/api/restaurants", restaurantRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/auth", resetPasswordRoutes); 
 app.use("/api/admin", adminRestaurantRoutes);
 
 app.get("/", (req, res) => {
@@ -49,4 +51,4 @@ io.on("connection", (socket) => {
 app.set("io", io);
 
 const PORT = process.env.PORT || 5001;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`)); 
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

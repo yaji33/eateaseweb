@@ -18,6 +18,7 @@ import BusinessTransactions from "@/pages/business/transactions/page";
 import NotFound from "@/pages/notFound";
 import BusinessProfile from "@/pages/business/profile/page";
 import BusinessMessages from "@/pages/business/messages/page";
+import ResetPasswordForm from "@/pages/auth/reset-password-form";
 
 const AppRoutes = () => {
   return (
@@ -26,6 +27,10 @@ const AppRoutes = () => {
       <Route path="/landing-page" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route
+        path="/reset-password/:userId/:token"
+        element={<ResetPasswordForm />}
+      />
       <Route path="/registration" element={<Registration />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy-policy" element={<Privacy />} />

@@ -2,26 +2,46 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "@/assets/logo.png";
 import "@/index.css";
-// import { sendResetEmail } from "@/services/authService"; // <- Optional for backend hook
+import axios from "axios"; // Ensure axios is imported or install it with npm/yarn
 
 const ResetPassword = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Access environment variables correctly in Vite or use a default
+  const API_URL =
+    import.meta.env?.VITE_API_URL ||
+    window.ENV_API_URL ||
+    "http://localhost:5001";
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
     setError("");
+    setIsLoading(true);
 
     try {
-      console.log("Sending reset email to:", email);
-      // await sendResetEmail(email); // Optional: your backend call
-      setMessage("A password reset link has been sent to your email.");
-    } catch (err) {
+      // Call the reset password endpoint
+      const response = await axios.post(`${API_URL}/api/auth/request-reset`, {
+        email,
+      });
+
+      setMessage(
+        response.data.message ||
+          "A password reset link has been sent to your email if it exists in our system."
+      );
+      setEmail(""); // Clear the input after successful submission
+    } catch (err: any) {
       console.error("Reset error:", err);
-      setError("Something went wrong. Please try again later.");
+      setError(
+        err.response?.data?.error ||
+          "Something went wrong. Please try again later."
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,8 +80,9 @@ const ResetPassword = () => {
           <button
             type="submit"
             className="bg-buttonPrimary text-white py-3 rounded-md text-center w-full font-medium text-sm"
+            disabled={isLoading}
           >
-            Send Reset Link
+            {isLoading ? "Sending..." : "Send Reset Link"}
           </button>
         </form>
 
