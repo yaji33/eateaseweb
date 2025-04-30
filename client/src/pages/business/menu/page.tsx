@@ -136,7 +136,7 @@ export default function Page() {
   }
 
   return (
-    <div className="flex w-full max-w-5xl mx-auto  flex-col min-h-screen font-poppins px-4 pt-20 gap-4">
+    <div className="flex w-full max-w-5xl mx-auto flex-col min-h-screen font-poppins px-4 pt-20 gap-4">
       <h1 className="font-semibold text-xl">Menu</h1>
       <div className="flex items-center justify-between w-full gap-2 sm:gap-4">
         <div className="flex items-center max-w-xl w-full">

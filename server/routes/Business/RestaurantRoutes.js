@@ -5,6 +5,8 @@ const User = require("../../models/Business/User");
 const Role = require("../../models/Role");
 const registerLimiter = require("../../middleware/registerLimiter");
 const router = express.Router();
+const sendEmail = require("../../utility/sendEmail");
+
 const {
   authMiddleware,
   businessMiddleware,
@@ -90,6 +92,14 @@ router.post("/", registerLimiter, async (req, res) => {
       password: hashedPassword,
       role_id: businessRole.id,
       business_id: savedRestaurant._id,
+    });
+
+    await sendEmail({
+      to: email,
+      subject: "Registration Received",
+      text: `Hi ${owner_name}, we've received your restaurant registration.`,
+      html: `<p>Hi ${owner_name},</p>
+             <p>Thanks for registering <strong>${name}</strong>. We'll review your information and notify you once approved.</p>`,
     });
 
     await newUser.save();
@@ -250,7 +260,6 @@ router.put("/profile", authMiddleware, businessMiddleware, async (req, res) => {
 
 router.get("/profile", authMiddleware, businessMiddleware, async (req, res) => {
   try {
-    // Get the business_id from the authenticated user
     const user = req.user;
 
     if (!user.business_id) {
@@ -258,8 +267,6 @@ router.get("/profile", authMiddleware, businessMiddleware, async (req, res) => {
         .status(404)
         .json({ message: "No business associated with this account" });
     }
-
-    // Find restaurant by business_id
     const restaurant = await Restaurant.findById(user.business_id);
 
     if (!restaurant) {
