@@ -12,7 +12,8 @@ interface OrderCardProps {
   orderId: string;
   orderItems: OrderItem[];
   totalAmount: number;
-  status: "pending" | "ongoing" | "completed";
+  status: "pending" | "ongoing" | "completed" | "denied";
+  onStatusChange?: (orderId: string, newStatus: number) => void;
 }
 
 const OrderCard: React.FC<OrderCardProps> = ({
@@ -21,8 +22,11 @@ const OrderCard: React.FC<OrderCardProps> = ({
   orderId,
   orderItems,
   totalAmount,
-  status
+  status,
+  onStatusChange,
 }) => {
+
+
   return (
     <div className="bg-white shadow-sm rounded-md p-3 px-4">
       <p className="text-sm">
@@ -48,25 +52,48 @@ const OrderCard: React.FC<OrderCardProps> = ({
 
       <div className="flex justify-between mt-3 font-medium">
         <p>Total</p>
-        <p>₱ {totalAmount}</p>
+        <p>
+          ₱{" "}
+          {orderItems.reduce(
+            (acc, item) => acc + item.quantity * item.price,
+            0
+          ).toLocaleString()}
+        </p>
       </div>
 
       <div className="flex justify-between py-5 gap-3 text-sm">
         {status === "pending" && (
           <>
-            <button className="w-full border p-2 rounded-md text-black">
+            <button
+              className="w-full border p-2 rounded-md text-black"
+              onClick={() => onStatusChange?.(orderId, 0)} // Deny
+            >
               Deny
             </button>
-            <button className="w-full bg-buttonPrimary p-2 rounded-md text-white">
+            <button
+              className="w-full bg-buttonPrimary p-2 rounded-md text-white"
+              onClick={() => onStatusChange?.(orderId, 2)} // Accept
+            >
               Accept
             </button>
           </>
         )}
 
         {status === "ongoing" && (
-          <button className="w-full bg-buttonPrimary p-2 rounded-md text-white">
-            Completed
-          </button>
+          <>
+            <button
+              className="w-full border p-2 rounded-md text-black"
+              onClick={() => onStatusChange?.(orderId, 0)} // Cancel
+            >
+              Cancel
+            </button>
+            <button
+              className="w-full bg-buttonPrimary p-2 rounded-md text-white"
+              onClick={() => onStatusChange?.(orderId, 4)} // Complete
+            >
+              Complete
+            </button>
+          </>
         )}
 
         {status === "completed" && (

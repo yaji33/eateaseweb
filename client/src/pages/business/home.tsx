@@ -37,7 +37,7 @@ export default function Home() {
     fetchBusinessName();
   }, []); // Added empty dependency array to prevent continuous fetching
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e)  => {
     const banner = e.currentTarget;
     const rect = banner.getBoundingClientRect();
 
