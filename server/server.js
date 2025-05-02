@@ -10,6 +10,9 @@ const authRoutes = require("./routes/Auth/AuthRoutes");
 const menuRoutes = require("./routes/Business/MenuRoutes");
 const adminRestaurantRoutes = require("./routes/Admin/AdminRestaurantsRoutes");
 const resetPasswordRoutes = require("./routes/Auth/ResetPassword");
+const orderRoutes = require("./routes/Business/OrderRoutes");
+const paymentRoutes = require("./routes/Business/PaymentRoutes");
+
 
 const app = express();
 const server = http.createServer(app);
@@ -25,6 +28,8 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cors());
 app.use("/uploads", express.static("uploads"));
 app.use("/api/menu", menuRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/payments", paymentRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)

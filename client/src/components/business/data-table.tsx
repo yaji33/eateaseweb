@@ -81,7 +81,7 @@ const TransactionsDataTable: React.FC<TransactionsDataTableProps> = ({
             <TableRow key={index} className="hover:bg-gray-50">
               <TableCell>{transaction.customerName}</TableCell>
               <TableCell>{transaction.transactionId}</TableCell>
-              <TableCell>${transaction.totalPayment}</TableCell>
+              <TableCell>{transaction.totalPayment}</TableCell>
               <TableCell className="flex items-center gap-2">
                 {paymentIcons[transaction.modeOfPayment]}
                 {transaction.modeOfPayment}
