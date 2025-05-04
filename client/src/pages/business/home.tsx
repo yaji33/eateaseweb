@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function Home() {
   const [businessName, setBusinessName] = useState(null);
   const [businessProgress, setBusinessProgress] = useState(0);
@@ -41,7 +43,7 @@ export default function Home() {
 
         // Fetch business profile
         const profileResponse = await axios.get(
-          "http://localhost:5001/api/restaurants/profile",
+          `${API_URL}/api/restaurants/profile`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -54,7 +56,7 @@ export default function Home() {
         setBusinessStatus(profileResponse.data.status || 0);
 
         // Fetch menu items
-        const menuResponse = await axios.get("http://localhost:5001/api/menu", {
+        const menuResponse = await axios.get(`${API_URL}/api/menu`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -82,7 +84,10 @@ export default function Home() {
   }, []);
 
   // Calculate progress based on completed steps
-  const calculateProgress = (profile: { name: any; address: any; isVerified: any; status: number; }, menu: string | any[]) => {
+  const calculateProgress = (
+    profile: { name: any; address: any; isVerified: any; status: number },
+    menu: string | any[]
+  ) => {
     let completedSteps = 0;
     const totalSteps = 4;
 
@@ -109,7 +114,11 @@ export default function Home() {
     setBusinessProgress(Math.round((completedSteps / totalSteps) * 100));
   };
 
-  const handleMouseMove = (e: { currentTarget: any; clientX: number; clientY: number; }) => {
+  const handleMouseMove = (e: {
+    currentTarget: any;
+    clientX: number;
+    clientY: number;
+  }) => {
     const banner = e.currentTarget;
     const rect = banner.getBoundingClientRect();
 

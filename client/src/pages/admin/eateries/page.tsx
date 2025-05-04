@@ -12,6 +12,8 @@ import { Loader } from "@/components/ui/loader";
 import axios from "axios";
 import socket from "@/lib/socket";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const ITEMS_PER_PAGE = 15;
 
 const statusMap = {
@@ -24,14 +26,11 @@ const statusMap = {
 async function getEateriesData(): Promise<EateriesCol[]> {
   try {
     const token = localStorage.getItem("token");
-    const response = await axios.get(
-      "http://localhost:5001/api/admin/restaurants",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axios.get(`${API_URL}/api/admin/restaurants`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return response.data.map((restaurant: any) => ({
@@ -39,7 +38,8 @@ async function getEateriesData(): Promise<EateriesCol[]> {
       name: restaurant.name,
       location: `${restaurant.address.street}, ${restaurant.address.city}, ${restaurant.address.province}`,
       owner: restaurant.owner_name,
-      status: statusMap[restaurant.status as keyof typeof statusMap] || "pending",
+      status:
+        statusMap[restaurant.status as keyof typeof statusMap] || "pending",
       email: restaurant.email,
       contact: restaurant.contact,
       operating_hours: `${restaurant.operating_hours.open} - ${restaurant.operating_hours.close}`,

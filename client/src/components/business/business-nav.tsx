@@ -12,11 +12,13 @@ import ProfileIcon from "@/assets/user1.svg";
 import SignOut from "@/assets/log-out.svg";
 import "@/index.css";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function Navbar() {
   const { user } = useAuthStore();
   //const { messages, setSelectedChat } = useChat();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [ , setIsChatOpen] = useState(false);
+  const [, setIsChatOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -68,14 +70,11 @@ function Navbar() {
         }
 
         // Make a direct API call to get the restaurant profile
-        const response = await axios.get(
-          "http://localhost:5001/api/restaurants/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get(`${API_URL}/api/restaurants/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         // Set the business profile image from the correct field
         setBusinessProfile(response.data.business_profile);

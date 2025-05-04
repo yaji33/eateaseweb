@@ -28,6 +28,8 @@ import axios from "axios";
 import { format } from "date-fns";
 import { ValueType } from "recharts/types/component/DefaultTooltipContent";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 interface RevenueData {
   period: string;
   revenue: number;
@@ -100,18 +102,15 @@ function RestaurantDashboard() {
   useEffect(() => {
     // Fetch restaurant profile and payment data
     Promise.all([fetchRestaurantProfile(), fetchDashboardData()]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateRange]);
 
   const fetchRestaurantProfile = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(
-        "http://localhost:5001/api/restaurants/profile",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const res = await axios.get(`${API_URL}/api/restaurants/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       setRestaurantProfile({
         name: res.data.name || "Bella Cucina",
@@ -127,7 +126,7 @@ function RestaurantDashboard() {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5001/api/payments", {
+      const res = await axios.get(`${API_URL}/api/payments`, {
         headers: { Authorization: `Bearer ${token}` },
         params: { period: dateRange.toLowerCase().replace(" ", "_") },
       });

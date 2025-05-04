@@ -3,6 +3,8 @@ import TransactionsDataTable from "@/components/business/data-table";
 import axios from "axios";
 import Search from "@/assets/search.svg";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 interface Transaction {
   customerName: string;
   transactionId: string;
@@ -33,7 +35,7 @@ export default function Page() {
       setLoading(true);
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5001/api/payments", {
+        const res = await axios.get(`${API_URL}/api/payments`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

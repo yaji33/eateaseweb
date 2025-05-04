@@ -1,4 +1,5 @@
 import { useAuthStore } from "@/state/authStore";
+const API_URL = import.meta.env.VITE_API_URL;
 
 interface User {
   id: string;
@@ -9,17 +10,19 @@ interface User {
 interface LoginResponse {
   role_id: undefined;
   id: string;
-  name: string; 
-  email: string; 
-  restaurant_status: number; 
-  restaurant_name: string; 
-  token: string; 
+  name: string;
+  email: string;
+  restaurant_status: number;
+  restaurant_name: string;
+  token: string;
   user: User;
 }
 
-{/*interface ErrorResponse {
+{
+  /*interface ErrorResponse {
   message?: string;
-} */}
+} */
+}
 
 export const loginUser = async (
   email: string,
@@ -28,7 +31,7 @@ export const loginUser = async (
   try {
     console.log("Sending login request:", { email, password });
 
-    const response = await fetch("http://localhost:5001/api/auth/login", {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

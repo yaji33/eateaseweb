@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Delete from "@/assets/delete.svg";
@@ -10,6 +10,8 @@ import Modals from "@/components/business/modals";
 import EditMenu from "@/components/business/edit-modal";
 import Screen from "@/assets/screen_warning.svg";
 import { toast } from "react-hot-toast"; // Import toast
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 interface FoodCardProps {
   _id: string;
@@ -36,7 +38,7 @@ export default function Page() {
       setIsLoading(true);
       const token = localStorage.getItem("token");
 
-      const res = await axios.get("http://localhost:5001/api/menu", {
+      const res = await axios.get(`${API_URL}/api/menu`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -85,7 +87,7 @@ export default function Page() {
       setIsLoading(true);
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:5001/api/menu/delete-multiple",
+        `${API_URL}/api/menu/delete-multiple`,
         { ids: selectedItems },
         {
           headers: {
@@ -164,7 +166,6 @@ export default function Page() {
         </div>
 
         <div className="flex sm:gap-2 gap-1">
-          
           <button
             className="border rounded-md p-2 bg-white hover:bg-gray-200 flex items-center justify-center w-10 h-10"
             onClick={deleteSelectedItems}

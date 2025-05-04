@@ -5,6 +5,8 @@ import Send from "@/assets/send.svg";
 import Profile from "@/assets/user1.svg";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 // Simple component for truncating text with ellipsis
 const TruncatedText = ({
   text,
@@ -44,7 +46,7 @@ export default function ChatPage(): React.ReactElement {
         }
 
         const response = await axios.get(
-          "http://localhost:5001/api/restaurants/profile",
+          `${API_URL}/api/restaurants/profile`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

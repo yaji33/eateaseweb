@@ -5,6 +5,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import LocationPicker from "@/components/business/GeoMapping";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 interface BusinessData {
   name: string;
   address: {
@@ -135,7 +137,7 @@ export default function Page() {
         }
 
         const response = await axios.get(
-          "http://localhost:5001/api/restaurants/profile",
+          `${API_URL}/api/restaurants/profile`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -409,7 +411,7 @@ export default function Page() {
       }
 
       const response = await axios.put(
-        "http://localhost:5001/api/restaurants/launch",
+        `${API_URL}/api/restaurants/launch`,
         {},
         {
           headers: {

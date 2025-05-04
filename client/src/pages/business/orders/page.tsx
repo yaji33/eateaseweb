@@ -4,6 +4,8 @@ import axios from "axios";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import OrderCard from "@/components/business/OrderCard";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 interface OrderItem {
   name: string;
   quantity: number;
@@ -26,7 +28,7 @@ export default function Page() {
     const fetchOrders = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5001/api/orders", {
+        const res = await axios.get(`${API_URL}/api/orders`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -79,7 +81,7 @@ export default function Page() {
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `http://localhost:5001/api/orders/${orderId}/status`,
+        `${API_URL}/api/orders/${orderId}/status`,
         {
           status: newStatus,
         },

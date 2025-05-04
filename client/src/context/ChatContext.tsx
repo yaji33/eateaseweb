@@ -7,6 +7,8 @@ import {
 } from "react";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 // Server response types
 interface ServerMessage {
   sender_id: string;
@@ -157,12 +159,9 @@ export function ChatProvider({ children }: ChatProviderProps) {
 
       // Note: Our backend now handles auth through middleware
       // and extracts restaurant_id from the JWT token
-      const response = await axios.get(
-        `http://localhost:5001/api/chat/conversations`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get(`${API_URL}/api/chat/conversations`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response.data && response.data.success) {
         console.log(
@@ -188,7 +187,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
           // If there's a selectedChat, update it with fresh data
           if (selectedChat) {
             const updatedSelectedChat = convertedChats.find(
-              (chat: { id: string; }) => chat.id === selectedChat.id
+              (chat: { id: string }) => chat.id === selectedChat.id
             );
             if (updatedSelectedChat) {
               setSelectedChat(updatedSelectedChat);
@@ -245,7 +244,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
 
       // Restaurant ID comes from auth token, not needed in request body
       const response = await axios.post(
-        "http://localhost:5001/api/chat/send",
+        `${API_URL}/api/chat/send`,
         messageData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -276,7 +275,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
         if (!token) return;
 
         await axios.put(
-          `http://localhost:5001/api/chat/seen/${selectedChat.id}`,
+          `${API_URL}/api/chat/seen/${selectedChat.id}`,
           {},
           {
             headers: { Authorization: `Bearer ${token}` },
