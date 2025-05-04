@@ -25,11 +25,7 @@ cd frontend
 npm install
 ```
 
-<<<<<<< HEAD
-### 3️⃣ Run Development Server
-=======
 3️⃣ Run Development Server
->>>>>>> origin/dev
 ```sh
 npm run dev
 ```
