@@ -9,6 +9,8 @@ import toast, { Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
 import Navbar from "@/components/public/public-nav";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Registration = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -65,7 +67,7 @@ const Registration = () => {
       };
 
       await axios.post(
-        "http://localhost:5001/api/restaurants",
+        `${API_URL}/api/restaurants`,
         registrationData
       );
 
