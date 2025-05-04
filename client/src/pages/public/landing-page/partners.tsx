@@ -1,6 +1,15 @@
-import React from "react";
+//import React from "react";
 
-const PartnersSection = ({ partners }) => {
+interface Partner {
+  name: string;
+  logo: string;
+}
+
+interface PartnersSectionProps {
+  partners: Partner[];
+}
+
+const PartnersSection: React.FC<PartnersSectionProps> = ({ partners }) => {
   return (
     <section className="bg-gray-50 font-poppins py-32">
       <div className="max-w-6xl mx-auto px-4">

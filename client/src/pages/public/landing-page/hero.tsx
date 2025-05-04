@@ -1,7 +1,11 @@
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const HeroSection = ({ illustration }) => {
+interface HeroSectionProps {
+  illustration: string;
+}
+
+const HeroSection: React.FC<HeroSectionProps> = ({ illustration }) => {
   const navigate = useNavigate();
 
   return (

@@ -1,4 +1,4 @@
-import React from "react";
+//import React from "react";
 import Navbar from "@/components/public/public-nav";
 import HeroSection from "./hero";
 import FeaturesSection from "./features";

@@ -1,6 +1,11 @@
-import React from "react";
+//import React from "react";
 
-const FeatureCard = ({ title, description }) => (
+interface FeatureCardProps {
+  title: string;
+  description: string;
+}
+
+const FeatureCard: React.FC<FeatureCardProps> = ({ title, description }) => (
   <div className="p-12 bg-white rounded-lg shadow-sm">
     <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
     <p className="mt-4 text-gray-700">{description}</p>
