@@ -16,7 +16,7 @@ const FoodCard: React.FC<FoodCardProps> = ({ image, title, price }) => {
       />
       <div className="justify-start items-left flex flex-col w-full">
         <h3 className="text-sm font-semibold ">{title}</h3>
-        <p className=" text-sm">₱{price}</p>
+        <p className=" text-sm">₱ {price}</p>
       </div>
     </div>
   );

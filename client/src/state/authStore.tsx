@@ -1,10 +1,9 @@
 import { create } from "zustand";
-import { useNavigate } from "react-router-dom";
 
 interface User {
   id: string;
   name: string;
-  role: "admin" | "business" | null;
+  role: "admin" | "business" | "unknown" | null;
   token: string;
 }
 
@@ -18,18 +17,21 @@ export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
   login: (user, navigate) => {
     set({ user });
-
+    localStorage.setItem("authToken", user.token);
     if (user.role === "admin") {
+      console.log("Redirecting admin user to /dashboard");
       navigate("/dashboard");
     } else if (user.role === "business") {
+      console.log("Redirecting business user to /business-home");
       navigate("/business-home");
     } else {
+      console.warn(`Unrecognized role: ${user.role}. Redirecting to login.`);
       navigate("/login");
     }
   },
 
   logout: () => {
     set({ user: null });
-    localStorage.removeItem("authToken"); 
+    localStorage.removeItem("authToken");
   },
 }));

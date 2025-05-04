@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Bell } from "lucide-react"; 
+import { Bell } from "lucide-react";
 
 export default function Notifications() {
   const [isOpen, setIsOpen] = useState(false);
-  const modalRef = useRef(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleClickOutside = (event: { target: any }) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
         setIsOpen(false);
       }
@@ -17,7 +18,6 @@ export default function Notifications() {
 
   return (
     <div className="relative">
-
       <button onClick={() => setIsOpen(!isOpen)} className="p-2 relative">
         <Bell className="w-6 h-6 text-gray-700 hover:text-black" />
         <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>

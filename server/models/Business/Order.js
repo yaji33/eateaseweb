@@ -14,7 +14,7 @@ const orderSchema = new mongoose.Schema({
     },
   ],
   total_amount: Number,
-  order_status: Number, // 1: Pending, 2: Ongoing, 4: Completed, 0: Denied
+  order_status: Number, 
   pickup_time: String,
 }, { timestamps: true });
 

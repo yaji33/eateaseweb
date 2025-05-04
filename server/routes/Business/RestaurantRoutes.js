@@ -61,7 +61,7 @@ router.post("/", registerLimiter, async (req, res) => {
       contact,
       email,
       password: hashedPassword,
-      status: 1,
+      status: 0,
       restaurant_photo: "",
       business_profile: "",
       restaurant_description: "",
@@ -108,6 +108,68 @@ router.post("/", registerLimiter, async (req, res) => {
   } catch (error) {
     console.error("Error saving restaurant:", error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+router.put("/launch", authMiddleware, businessMiddleware, async (req, res) => {
+  try {
+    // Find the restaurant associated with the logged-in business user
+    const restaurant = await Restaurant.findById(req.user.business_id);
+
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+
+    // Check if restaurant is in approved state (status = 1)
+    if (restaurant.status !== 1) {
+      return res.status(400).json({
+        message:
+          "Restaurant cannot be launched. It must be approved by admin first.",
+      });
+    }
+
+    // Verify required fields are filled
+    const requiredFields = [
+      "name",
+      "contact",
+      "address.street",
+      "address.city",
+      "operating_hours.open",
+      "operating_hours.close",
+    ];
+
+    const missingFields = [];
+
+    for (const field of requiredFields) {
+      // Handle nested fields
+      if (field.includes(".")) {
+        const [parent, child] = field.split(".");
+        if (!restaurant[parent] || !restaurant[parent][child]) {
+          missingFields.push(field);
+        }
+      } else if (!restaurant[field]) {
+        missingFields.push(field);
+      }
+    }
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        message: `Cannot launch restaurant. Please complete these fields first: ${missingFields.join(
+          ", "
+        )}`,
+      });
+    }
+
+    // Update restaurant status to 'Live' (status = 2)
+    restaurant.status = 2;
+    await restaurant.save();
+
+    res.json(restaurant);
+  } catch (err) {
+    console.error("❌ Failed to launch restaurant:", err.message);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: err.message });
   }
 });
 

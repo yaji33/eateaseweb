@@ -42,11 +42,16 @@ const ResetPasswordForm = () => {
           setError("This password reset link is invalid or has expired");
         }
       } catch (err) {
-        console.error("Token verification error:", err);
-        setError(
-          err.response?.data?.error ||
-            "This password reset link is invalid or has expired"
-        );
+        if (axios.isAxiosError(err)) {
+          setError(
+            err.response?.data?.error ||
+              "This password reset link is invalid or has expired"
+          );
+        } else if (err instanceof Error) {
+          setError(err.message || "An unexpected error occurred");
+        } else {
+          setError("An unexpected error occurred");
+        }
       } finally {
         setIsVerifying(false);
       }
@@ -55,7 +60,7 @@ const ResetPasswordForm = () => {
     verifyToken();
   }, [userId, token, API_URL]);
 
-  const handleResetPassword = async (e) => {
+  const handleResetPassword = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setMessage("");
     setError("");
@@ -87,10 +92,16 @@ const ResetPasswordForm = () => {
         navigate("/login");
       }, 3000);
     } catch (err) {
-      console.error("Password reset error:", err);
-      setError(
-        err.response?.data?.error || "Something went wrong. Please try again."
-      );
+      if (axios.isAxiosError(err)) {
+        setError(
+          err.response?.data?.error ||
+            "Something went wrong. Please try again later."
+        );
+      } else if (err instanceof Error) {
+        setError(err.message || "An unexpected error occurred");
+      } else {
+        setError("An unexpected error occurred");
+      }
     } finally {
       setIsLoading(false);
     }

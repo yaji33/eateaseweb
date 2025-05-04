@@ -1,21 +1,23 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
 
 interface EateryState {
   eateryId: string | null;
   eateryName: string | null;
   eateryOwner: string | null;
-  open: boolean; // Added open state for modal
+  open: boolean; 
   setEatery: (id: string, name: string, owner: string) => void;
-  setEateryId: (id: string) => void; // Added method to set just the ID
-  setOpen: (open: boolean) => void; // Added method to control modal visibility
+  setEateryId: (id: string) => void;
+  setOpen: (open: boolean) => void;
+  closeModal: () => void;
   clearEatery: () => void;
 }
 
 interface ModalState {
   open: boolean;
   rowData: any | null;
-  openModal: (data: any) => void; 
-  closeModal: () => void; // Added method to close modal
+  openModal: (data: any) => void;
+  closeModal: () => void; 
 }
 
 export const useEateryStore = create<EateryState>((set) => ({
@@ -23,6 +25,7 @@ export const useEateryStore = create<EateryState>((set) => ({
   eateryName: null,
   eateryOwner: null,
   open: false,
+  closeModal: () => set({ open: false }),
   setEatery: (id, name, owner) =>
     set({ eateryId: id, eateryName: name, eateryOwner: owner }),
   setEateryId: (id) => set({ eateryId: id }),

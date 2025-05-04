@@ -9,6 +9,7 @@ import FoodCard from "@/components/business/FoodCard";
 import Modals from "@/components/business/modals";
 import EditMenu from "@/components/business/edit-modal";
 import Screen from "@/assets/screen_warning.svg";
+import { toast } from "react-hot-toast"; // Import toast
 
 interface FoodCardProps {
   _id: string;
@@ -24,6 +25,7 @@ export default function Page() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchMenuItems();
@@ -31,6 +33,7 @@ export default function Page() {
 
   const fetchMenuItems = async () => {
     try {
+      setIsLoading(true);
       const token = localStorage.getItem("token");
 
       const res = await axios.get("http://localhost:5001/api/menu", {
@@ -39,6 +42,7 @@ export default function Page() {
         },
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const formatted = res.data.map((item: any) => ({
         _id: item._id,
         title: item.name,
@@ -50,6 +54,9 @@ export default function Page() {
       setFoods(formatted);
     } catch (err) {
       console.error("Failed to fetch menu items", err);
+      toast.error("Failed to load menu items");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,9 +67,22 @@ export default function Page() {
   };
 
   const deleteSelectedItems = async () => {
-    if (selectedItems.length === 0) return;
+    if (selectedItems.length === 0) {
+      toast.error("Please select items to delete");
+      return;
+    }
+
+    // Show confirmation dialog
+    if (
+      !window.confirm(
+        `Are you sure you want to delete ${selectedItems.length} item(s)?`
+      )
+    ) {
+      return;
+    }
 
     try {
+      setIsLoading(true);
       const token = localStorage.getItem("token");
       await axios.post(
         "http://localhost:5001/api/menu/delete-multiple",
@@ -76,33 +96,15 @@ export default function Page() {
 
       setSelectedItems([]);
       fetchMenuItems(); // refresh the list
-      alert("Selected items deleted!");
+      toast.success(`${selectedItems.length} item(s) deleted successfully`);
     } catch (err) {
       console.error("Failed to delete items", err);
-      alert("Error deleting menu items.");
+      toast.error("Error deleting menu items");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value.toLowerCase());
-  };
-
-  const filteredFoods = (category: string) => {
-    const categoryMap: Record<string, number> = {
-      "rice meals": 1,
-      "pasta": 2,
-      "snacks": 3,
-      "drinks": 4,
-      "coffee": 5,
-      "other": 6,
-    };    
-
-    return foods.filter((food) => {
-      const matchesSearch = food.title.toLowerCase().includes(searchTerm);
-      const matchesCategory = category === "all" || food.category_id === categoryMap[category];
-      return matchesSearch && matchesCategory;
-    });
-  };
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
@@ -127,7 +129,12 @@ export default function Page() {
               or rotating your device.
             </p>
             <div className="card-actions justify-center">
-              <button className="btn btn-primary">Go Back</button>
+              <button
+                className="btn btn-primary"
+                onClick={() => toast.error("Please use a larger screen")}
+              >
+                Go Back
+              </button>
             </div>
           </div>
         </div>
@@ -157,12 +164,11 @@ export default function Page() {
         </div>
 
         <div className="flex sm:gap-2 gap-1">
-          <button className="border rounded-md p-2 bg-white flex items-center justify-center w-10 h-10">
-            <img src={Filter} alt="filter" className="w-4" />
-          </button>
+          
           <button
             className="border rounded-md p-2 bg-white hover:bg-gray-200 flex items-center justify-center w-10 h-10"
             onClick={deleteSelectedItems}
+            disabled={isLoading || selectedItems.length === 0}
           >
             <img src={Delete} alt="delete" className="w-4" />
           </button>
@@ -199,44 +205,53 @@ export default function Page() {
           value={selectedCategory}
           className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4 data-[state=inactive]:hidden my-6"
         >
-          {foods
-            .filter((food) => {
-              const categoryMap: Record<string, number> = {
-                "rice meals": 1,
-                "pasta": 2,
-                "snacks": 3,
-                "drinks": 4,
-                "coffee": 5,
-                "other": 6,
-              };
-              
+          {isLoading ? (
+            <div className="col-span-full flex justify-center items-center py-12">
+              <p>Loading menu items...</p>
+            </div>
+          ) : foods.length === 0 ? (
+            <div className="col-span-full flex justify-center items-center py-12">
+              <p>No menu items found. Add some items to get started.</p>
+            </div>
+          ) : (
+            foods
+              .filter((food) => {
+                const categoryMap: Record<string, number> = {
+                  "rice meals": 1,
+                  pasta: 2,
+                  snacks: 3,
+                  drinks: 4,
+                  coffee: 5,
+                  other: 6,
+                };
 
-              const matchesCategory =
-                selectedCategory === "all" ||
-                food.category_id === categoryMap[selectedCategory];
+                const matchesCategory =
+                  selectedCategory === "all" ||
+                  food.category_id === categoryMap[selectedCategory];
 
-              const matchesSearch = food.title
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase());
+                const matchesSearch = food.title
+                  .toLowerCase()
+                  .includes(searchTerm.toLowerCase());
 
-              return matchesCategory && matchesSearch;
-            })
-            .map((food, index) => (
-              <div
-                key={index}
-                className="flex flex-col border rounded-lg p-2 bg-white shadow-md"
-              >
-                <div className="flex justify-between p-2">
-                <Checkbox
-                  checked={selectedItems.includes(food._id)}
-                  onCheckedChange={() => toggleSelectItem(food._id)}
-                />
+                return matchesCategory && matchesSearch;
+              })
+              .map((food, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col border rounded-lg p-2 bg-white shadow-md"
+                >
+                  <div className="flex justify-between p-2">
+                    <Checkbox
+                      checked={selectedItems.includes(food._id)}
+                      onCheckedChange={() => toggleSelectItem(food._id)}
+                    />
 
-                <EditMenu food={food} onItemUpdated={fetchMenuItems} />
+                    <EditMenu food={food} onItemUpdated={fetchMenuItems} />
+                  </div>
+                  <FoodCard {...food} />
                 </div>
-                <FoodCard {...food} />
-              </div>
-            ))}
+              ))
+          )}
         </TabsContent>
       </Tabs>
     </div>

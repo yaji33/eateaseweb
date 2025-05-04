@@ -6,7 +6,7 @@ import { EateriesCol, columns } from "./columns";
 import { DataTable } from "@/components/admin/data-table";
 import { useEateryStore } from "../../../state/modalStore";
 import { Modal } from "@/components/admin/modals";
-import { SkeletonTable } from "@/components/admin/skeleton-table";
+//import { SkeletonTable } from "@/components/admin/skeleton-table";
 import { Loader } from "@/components/ui/loader";
 
 import axios from "axios";
@@ -15,8 +15,9 @@ import socket from "@/lib/socket";
 const ITEMS_PER_PAGE = 15;
 
 const statusMap = {
-  1: "pending",
-  2: "active",
+  0: "pending",
+  1: "active",
+  2: "launched",
   3: "banned",
 };
 
@@ -32,12 +33,13 @@ async function getEateriesData(): Promise<EateriesCol[]> {
       }
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return response.data.map((restaurant: any) => ({
       id: restaurant._id,
       name: restaurant.name,
       location: `${restaurant.address.street}, ${restaurant.address.city}, ${restaurant.address.province}`,
       owner: restaurant.owner_name,
-      status: statusMap[restaurant.status] || "pending",
+      status: statusMap[restaurant.status as keyof typeof statusMap] || "pending",
       email: restaurant.email,
       contact: restaurant.contact,
       operating_hours: `${restaurant.operating_hours.open} - ${restaurant.operating_hours.close}`,
@@ -132,7 +134,7 @@ export default function Eateries() {
         <TabsContent value={statusFilter} className="mt-0">
           <div className="py-5">
             {loading ? (
-              <Loader text="Fetching the latest eateries..." /> 
+              <Loader text="Fetching the latest eateries..." />
             ) : (
               <DataTable columns={columns} data={paginatedData} />
             )}

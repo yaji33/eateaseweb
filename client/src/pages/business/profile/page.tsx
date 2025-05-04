@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import LocationPicker from "@/components/business/GeoMapping";
 
 interface BusinessData {
-  name: string; // Changed from businessName to match schema
+  name: string;
   address: {
     street: string;
     city: string;
@@ -18,13 +18,14 @@ interface BusinessData {
     };
   };
   contact: string;
-  business_profile: string; // Changed from businessProfile to match schema
-  restaurant_photo: string; // Added to match schema
-  restaurant_description: string; // Optional field
+  business_profile: string;
+  restaurant_photo: string;
+  restaurant_description: string;
   operating_hours: {
-    open: string; // Changed from day-specific to match schema
-    close: string; // Changed from day-specific to match schema
+    open: string;
+    close: string;
   };
+  status: number;
   logo: File | null;
   logoPreview: string | null;
   coverImage: File | null;
@@ -33,9 +34,34 @@ interface BusinessData {
   bannerImageBase64?: string;
 }
 
+interface UpdateData {
+  name: string;
+  business_profile: string;
+  restaurant_photo: string;
+  restaurant_description: string;
+  contact: string;
+  address: {
+    street: string;
+    city: string;
+    province: string;
+    zip: string;
+    coordinates: {
+      latitude: number | null;
+      longitude: number | null;
+    };
+  };
+  operating_hours: {
+    open: string;
+    close: string;
+  };
+  profileImageBase64?: string;
+  bannerImageBase64?: string;
+}
+
 export default function Page() {
   const [restaurant, setRestaurant] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [launchLoading, setLaunchLoading] = useState(false);
 
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -59,6 +85,7 @@ export default function Page() {
       open: "",
       close: "",
     },
+    status: 0, // Default status
     logo: null,
     logoPreview: null,
     coverImage: null,
@@ -112,6 +139,7 @@ export default function Page() {
             open: response.data.operating_hours?.open || "",
             close: response.data.operating_hours?.close || "",
           },
+          status: response.data.status || 0,
           logo: null,
           logoPreview: null,
           coverImage: null,
@@ -123,10 +151,15 @@ export default function Page() {
 
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching restaurant data:", err);
-        setError(
-          err.response?.data?.message || "Failed to load restaurant data"
-        );
+        if (axios.isAxiosError(err)) {
+          setError(
+            err.response?.data?.message || "Failed to load restaurant data"
+          );
+        } else if (err instanceof Error) {
+          setError(err.message || "An unexpected error occurred");
+        } else {
+          setError("An unexpected error occurred");
+        }
         setLoading(false);
       }
     };
@@ -134,12 +167,21 @@ export default function Page() {
     fetchRestaurantData();
   }, []);
 
-  const handleChange = (e) => {
+  interface ChangeEvent {
+    target: {
+      name: string;
+      value: string;
+    };
+  }
+
+  const handleChange = (e: ChangeEvent) => {
     const { name, value } = e.target;
     setBusinessData((prev) => {
       // Handle nested address fields
       if (name.startsWith("address.")) {
-        const addressField = name.split(".")[1];
+        const addressField = name.split(
+          "."
+        )[1] as keyof BusinessData["address"];
         return {
           ...prev,
           address: {
@@ -150,7 +192,9 @@ export default function Page() {
       }
       // Handle nested operating hours
       else if (name.startsWith("hours.")) {
-        const hoursField = name.split(".")[1];
+        const hoursField = name.split(
+          "."
+        )[1] as keyof BusinessData["operating_hours"];
         return {
           ...prev,
           operating_hours: {
@@ -201,7 +245,7 @@ export default function Page() {
     }));
   };
 
-  const fileToBase64 = (file: File) => {
+  const fileToBase64 = (file: File): Promise<string | undefined> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -248,7 +292,7 @@ export default function Page() {
       }
 
       // Prepare the data to match the backend schema
-      const updateData = {
+      const updateData: UpdateData = {
         name: businessData.name,
         business_profile: businessData.business_profile,
         restaurant_photo: businessData.restaurant_photo,
@@ -302,6 +346,7 @@ export default function Page() {
         ...prevData,
         logo: null,
         coverImage: null,
+        status: response.data.status,
         business_profile:
           response.data.business_profile || prevData.business_profile,
         restaurant_photo:
@@ -313,9 +358,59 @@ export default function Page() {
 
       alert("Profile updated successfully!");
     } catch (err) {
+      if (axios.isAxiosError(err)) {
+        alert(err.response?.data?.message || "Failed to update profile");
+      } else if (err instanceof Error) {
+        alert(err.message || "An unexpected error occurred");
+      } else {
+        alert("An unexpected error occurred");
+      }
       console.error("Error saving restaurant data:", err);
       setSaving(false);
-      alert(err.response?.data?.message || "Failed to update profile");
+    }
+  };
+
+  // Handle launching the restaurant (changing status to 2)
+  const handleLaunchRestaurant = async () => {
+    try {
+      setLaunchLoading(true);
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setError("You need to be logged in to launch your restaurant");
+        setLaunchLoading(false);
+        return;
+      }
+
+      const response = await axios.put(
+        "http://localhost:5001/api/restaurants/launch",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Update the restaurant data with the response
+      setRestaurant(response.data);
+      setBusinessData((prevData) => ({
+        ...prevData,
+        status: response.data.status,
+      }));
+
+      setLaunchLoading(false);
+      alert("Your restaurant is now live!");
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        alert(err.response?.data?.message || "Failed to launch restaurant");
+      } else if (err instanceof Error) {
+        alert(err.message || "An unexpected error occurred");
+      } else {
+        alert("An unexpected error occurred");
+      }
+      setLaunchLoading(false);
     }
   };
 
@@ -360,11 +455,53 @@ export default function Page() {
       console.log("Geolocation is not available in this browser.");
     }
   };
+
   const getFormattedAddress = () => {
     if (!businessData.address) return "No address available";
 
     const { street, city, province, zip } = businessData.address;
     return [street, city, province, zip].filter(Boolean).join(", ");
+  };
+
+  // Get status text based on status code
+  const getStatusText = (status) => {
+    switch (status) {
+      case 0:
+        return "Pending Approval";
+      case 1:
+        return "Approved (Not Published)";
+      case 2:
+        return "Live";
+      default:
+        return "Unknown Status";
+    }
+  };
+
+  // Get status color based on status code
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 0:
+        return "text-yellow-600 bg-yellow-100";
+      case 1:
+        return "text-blue-600 bg-blue-100";
+      case 2:
+        return "text-green-600 bg-green-100";
+      default:
+        return "text-gray-600 bg-gray-100";
+    }
+  };
+
+  // Check if restaurant can be launched
+  const canLaunch = () => {
+    return (
+      businessData.status === 1 && 
+      businessData.name &&
+      businessData.address?.street &&
+      businessData.address?.city &&
+      businessData.contact &&
+      businessData.operating_hours?.open &&
+      businessData.operating_hours?.close
+    );
   };
 
   if (loading)
@@ -385,7 +522,16 @@ export default function Page() {
 
   return (
     <div className="flex w-full max-w-5xl mx-auto flex-col min-h-screen bg-background_1 font-poppins px-4 pt-20 gap-5">
-      <h1 className="font-semibold text-xl">Restaurant Profile</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="font-semibold text-xl">Restaurant Profile</h1>
+        <div
+          className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+            businessData.status
+          )}`}
+        >
+          {getStatusText(businessData.status)}
+        </div>
+      </div>
       {isEditing ? (
         <div className="flex flex-col bg-white p-5 rounded-md shadow-md">
           <Input
@@ -594,12 +740,12 @@ export default function Page() {
             </div>
           </div>
 
-          {/*businessData.business_profile && (
-            <div className="mt-4 ">
+          {businessData.restaurant_description && (
+            <div className="mt-4">
               <h3 className="font-medium mb-2">About</h3>
               <p>{businessData.restaurant_description}</p>
             </div>
-          )*/}
+          )}
 
           <div className="mt-4">
             <p className="text-sm text-gray-600 mb-2">Location on Map</p>
@@ -618,7 +764,17 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="flex justify-end py-5">
+          <div className="flex justify-end py-5 gap-2">
+            {businessData.status === 1 && (
+              <Button
+                className="bg-green-600 text-white hover:bg-green-700"
+                onClick={handleLaunchRestaurant}
+                disabled={launchLoading || !canLaunch()}
+                title={!canLaunch() ? "Complete your profile first" : ""}
+              >
+                {launchLoading ? "Launching..." : "Launch Restaurant"}
+              </Button>
+            )}
             <Button
               className="bg-activeBackgroundDark text-white hover:bg-opacity-90"
               onClick={() => setIsEditing(true)}

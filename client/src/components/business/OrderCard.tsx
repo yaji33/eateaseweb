@@ -1,9 +1,9 @@
-import React from 'react'
+import React from "react";
 
 interface OrderItem {
-    name: string;
-    quantity: number;
-    price: number;
+  name: string;
+  quantity: number;
+  price: number;
 }
 
 interface OrderCardProps {
@@ -12,7 +12,7 @@ interface OrderCardProps {
   orderId: string;
   orderItems: OrderItem[];
   totalAmount: number;
-  status: "pending" | "ongoing" | "completed" | "denied";
+  status: "pending" | "ongoing" | "for pickup" | "completed" | "denied";
   onStatusChange?: (orderId: string, newStatus: number) => void;
 }
 
@@ -21,47 +21,55 @@ const OrderCard: React.FC<OrderCardProps> = ({
   customerName,
   orderId,
   orderItems,
-  totalAmount,
+  //totalAmount,
   status,
   onStatusChange,
 }) => {
-
-
   return (
-    <div className="bg-white shadow-sm rounded-md p-3 px-4">
-      <p className="text-sm">
-        Order ID: <span className="font-medium">{orderId}</span>
-      </p>
-      <p className="text-[14px]">
-        Timestamp: <span className="font-medium">{timestamp}</span>
-      </p>
-      <p className="text-sm">
-        Customer Name: <span className="font-medium">{customerName}</span>
-      </p>
-
-      <div className="border-b py-3">
-        <p className="text-sm">Order Lists:</p>
-        {orderItems.map((item, index) => (
-          <div key={index} className="flex justify-between mt-3 font-medium">
-            <p>{item.name}</p>
-            <p>x{item.quantity}</p>
-            <p>₱ {item.price}</p>
-          </div>
-        ))}
+    <div className="bg-white shadow-sm rounded-md p-3 px-4 flex flex-col h-96">
+      {/* Header section */}
+      <div className="mb-2">
+        <p className="text-sm">
+          Order ID: <span className="font-medium">{orderId}</span>
+        </p>
+        <p className="text-sm">
+          Timestamp: <span className="font-medium">{timestamp}</span>
+        </p>
+        <p className="text-sm">
+          Customer Name: <span className="font-medium">{customerName}</span>
+        </p>
       </div>
 
+      {/* Order list section with fixed height and scrolling */}
+      <div className="border-b py-2 flex-grow overflow-hidden flex flex-col">
+        <p className="text-sm mb-2">Order Lists:</p>
+        <div className="overflow-y-auto flex-grow">
+          {orderItems.map((item, index) => (
+            <div
+              key={index}
+              className="flex justify-between mt-2 font-medium text-sm"
+            >
+              <p className="w-1/2 truncate pr-2">{item.name}</p>
+              <p className="w-1/6 text-center">x{item.quantity}</p>
+              <p className="w-1/3 text-right">₱ {item.price}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Total section */}
       <div className="flex justify-between mt-3 font-medium">
         <p>Total</p>
         <p>
           ₱{" "}
-          {orderItems.reduce(
-            (acc, item) => acc + item.quantity * item.price,
-            0
-          ).toLocaleString()}
+          {orderItems
+            .reduce((acc, item) => acc + item.quantity * item.price, 0)
+            .toLocaleString()}
         </p>
       </div>
 
-      <div className="flex justify-between py-5 gap-3 text-sm">
+      {/* Action buttons section */}
+      <div className="flex justify-between py-4 gap-3 text-sm mt-auto">
         {status === "pending" && (
           <>
             <button
@@ -72,7 +80,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
             </button>
             <button
               className="w-full bg-buttonPrimary p-2 rounded-md text-white"
-              onClick={() => onStatusChange?.(orderId, 2)} // Accept
+              onClick={() => onStatusChange?.(orderId, 2)} // Accept to ongoing
             >
               Accept
             </button>
@@ -89,11 +97,20 @@ const OrderCard: React.FC<OrderCardProps> = ({
             </button>
             <button
               className="w-full bg-buttonPrimary p-2 rounded-md text-white"
-              onClick={() => onStatusChange?.(orderId, 4)} // Complete
+              onClick={() => onStatusChange?.(orderId, 3)} // Set to for pickup
             >
-              Complete
+              For Pickup
             </button>
           </>
+        )}
+
+        {status === "for pickup" && (
+          <button
+            className="w-full bg-buttonPrimary p-2 rounded-md text-white"
+            onClick={() => onStatusChange?.(orderId, 4)} // Done
+          >
+            Done
+          </button>
         )}
 
         {status === "completed" && (
@@ -106,4 +123,4 @@ const OrderCard: React.FC<OrderCardProps> = ({
   );
 };
 
-export default OrderCard
+export default OrderCard;

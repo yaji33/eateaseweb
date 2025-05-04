@@ -15,7 +15,7 @@ const RestaurantSchema = new mongoose.Schema({
     open: { type: String, required: true },
     close: { type: String, required: true },
   },
-  status: { type: Number, default: 1 },
+  status: { type: Number, default: 0 },
   created_at: { type: Date, default: Date.now },
 });
 

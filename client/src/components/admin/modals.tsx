@@ -8,7 +8,11 @@ import {
 import axios from "axios";
 import { useEateryStore } from "@/state/modalStore";
 
-
+interface ModalProps {
+  open: boolean;
+  onClose: () => void;
+  ownerId: string | null;
+}
 
 interface RestaurantDetails {
   name: string;

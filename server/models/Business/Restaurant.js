@@ -25,7 +25,7 @@ const RestaurantSchema = new mongoose.Schema({
   },
   rating: { type: Number, default: 0 },
   rating_count: { type: Number, default: 0 },
-  status: { type: Number, default: 1 },
+  status: { type: Number, default: 0 },
   created_at: { type: Date, default: Date.now },
 });
 

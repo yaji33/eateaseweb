@@ -1,8 +1,8 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 import {
-  LineChart,
-  Line,
+  //LineChart,
+  //Line,
   XAxis,
   YAxis,
   Tooltip,
@@ -11,9 +11,9 @@ import {
   Legend,
   Area,
   AreaChart,
-  defs,
-  linearGradient,
-  stop,
+  //defs,
+  //linearGradient,
+  //stop,
 } from "recharts";
 import { User, Utensils, Coins } from "lucide-react";
 

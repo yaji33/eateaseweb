@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import ComboboxDemo from "@/components/business/combo-box";
 import EditIcon from "@/assets/edit.svg";
 import axios from "axios";
+import { toast } from "react-hot-toast"; 
 
 interface MenuData {
   title: string;
@@ -18,6 +19,12 @@ interface MenuData {
   image: File | null;
   imagePreview: string;
   category_id: number;
+}
+interface MenuPayload {
+  title: string;
+  price: number;
+  category_id: number;
+  imageBase64?: string;
 }
 
 interface EditMenuModalProps {
@@ -31,14 +38,19 @@ interface EditMenuModalProps {
   onItemUpdated: () => void;
 }
 
-export default function EditMenuModal({ food, onItemUpdated }: EditMenuModalProps) {
+export default function EditMenuModal({
+  food,
+  onItemUpdated,
+}: EditMenuModalProps) {
   const [menuData, setMenuData] = useState<MenuData>({
     title: food.title,
     price: food.price,
     image: null,
     imagePreview: food.image,
-    category_id: food.category_id, 
-  });  
+    category_id: food.category_id,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMenuData({ ...menuData, [e.target.name]: e.target.value });
@@ -55,56 +67,70 @@ export default function EditMenuModal({ food, onItemUpdated }: EditMenuModalProp
     }
   };
 
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64String = (reader.result as string).split(",")[1]; 
+        resolve(base64String);
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   const handleSubmit = async () => {
+    if (!menuData.title || menuData.price <= 0) {
+      toast.error("Please fill out all required fields");
+      return;
+    }
+
     try {
+      setIsLoading(true);
       const token = localStorage.getItem("token");
-  
-      const payload: any = {
+
+      const payload: MenuPayload = {
         title: menuData.title,
         price: menuData.price,
         category_id: menuData.category_id,
       };
-  
+
       if (menuData.image) {
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-          const base64String = (reader.result as string).split(",")[1];
-          payload.imageBase64 = base64String;
-  
-          await axios.patch(`http://localhost:5001/api/menu/${food._id}`, payload, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-  
-          alert("Menu item updated successfully!");
-        };
-        reader.readAsDataURL(menuData.image);
-      } else {
-        await axios.patch(`http://localhost:5001/api/menu/${food._id}`, payload, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
-        onItemUpdated(); 
-        alert("Menu item updated successfully!");
+        const base64String = await fileToBase64(menuData.image);
+        payload.imageBase64 = base64String;
       }
+
+      await axios.patch(`http://localhost:5001/api/menu/${food._id}`, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      toast.success("Menu item updated successfully!");
+      onItemUpdated();
+      setOpen(false);
     } catch (err) {
       console.error("Failed to update menu item", err);
-      alert("Error updating menu item.");
+      toast.error("Error updating menu item");
+    } finally {
+      setIsLoading(false);
     }
-  };  
+  };
 
   const handleCategoryChange = (categoryId: number) => {
     setMenuData((prev) => ({
       ...prev,
       category_id: categoryId,
     }));
-  };  
+  };
 
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      onOpenChange={(newOpen) => {
+        setOpen(newOpen);
+      }}
+    >
       <DialogTrigger asChild>
         <button>
           <img src={EditIcon} alt="edit" className="w-4" />
@@ -124,6 +150,7 @@ export default function EditMenuModal({ food, onItemUpdated }: EditMenuModalProp
             placeholder="Food Name"
             value={menuData.title}
             onChange={handleChange}
+            className="border-gray-300 focus:ring-primary"
           />
           <Input
             name="price"
@@ -131,6 +158,7 @@ export default function EditMenuModal({ food, onItemUpdated }: EditMenuModalProp
             placeholder="Price"
             value={menuData.price}
             onChange={handleChange}
+            className="border-gray-300 focus:ring-primary"
           />
 
           <div className="flex flex-col items-center gap-2">
@@ -146,7 +174,7 @@ export default function EditMenuModal({ food, onItemUpdated }: EditMenuModalProp
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="cursor-pointer"
+              className="cursor-pointer border-gray-300"
             />
           </div>
 
@@ -154,14 +182,19 @@ export default function EditMenuModal({ food, onItemUpdated }: EditMenuModalProp
         </div>
 
         <div className="flex justify-end mt-4 gap-2">
-          <Button variant="outline" className="hover:bg-gray-200">
+          <Button
+            variant="outline"
+            className="hover:bg-gray-200 transition"
+            onClick={() => setOpen(false)}
+          >
             Cancel
           </Button>
-          <Button
+          <Button 
             onClick={handleSubmit}
-            className="bg-activeBackgroundDark text-white hover:bg-opacity-90"
+            disabled={isLoading}
+            className="bg-activeBackgroundDark text-white hover:bg-opacity-90 transition"
           >
-            Save Changes
+            {isLoading ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </DialogContent>

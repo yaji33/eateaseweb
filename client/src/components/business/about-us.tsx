@@ -16,12 +16,18 @@ export default function BusinessDetails() {
     coverImage: null,
   });
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     setBusinessData({ ...businessData, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e) => {
-    setBusinessData({ ...businessData, [e.target.name]: e.target.files[0] });
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setBusinessData({ ...businessData, [e.target.name]: e.target.files[0] });
+    }
   };
 
   const handleSave = () => {
@@ -118,7 +124,9 @@ export default function BusinessDetails() {
               />
             </div>
           )}
-          <p className="text-lg font-semibold mt-4">{businessData.businessName}</p>
+          <p className="text-lg font-semibold mt-4">
+            {businessData.businessName}
+          </p>
           <div className="py-5 flex gap-8">
             {businessData.logo && (
               <div className="">

@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/state/authStore";
 import { loginUser } from "@/services/authService";
-import Logo from "@/assets/logo.png";
+//import Logo from "@/assets/logo.png";
 import { motion } from "framer-motion";
-import toast, { Toaster } from "react-hot-toast";
-import Navbar from "@/components/public/navbar";
+import toast from "react-hot-toast";
+import Navbar from "@/components/public/public-nav";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -15,7 +15,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuthStore();
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
@@ -23,15 +23,83 @@ const Login = () => {
     try {
       const response = await loginUser(email, password);
 
+      // Check if we have a valid role_id
+      if (response.role_id === undefined) {
+        throw new Error("Invalid account type received from server");
+      }
+
+      // Map role_id to role string
+      let role: "admin" | "business" | "unknown" | null = null;
+      if (response.role_id === 1) {
+        role = "admin";
+      } else if (response.role_id === 3) {
+        role = "business";
+      } else {
+        console.warn(`Unexpected role_id received: ${response.role_id}`);
+        role = "unknown";
+      }
+
       const user = {
         id: response.id,
         name: response.name,
-        role: response.role_id === 1 ? "admin" : "business",
+        email: response.email,
+        role: role,
         token: response.token,
+        restaurant_status: response.restaurant_status,
+        restaurant_name: response.restaurant_name,
       };
 
-      toast.success("Login successful!");
-      login(user, navigate);
+      console.log(`🔑 Login successful for user: ${user.name} (${user.role})`);
+
+      // Status-specific messaging for business accounts
+      if (user.role === "business" && user.restaurant_status !== undefined) {
+        switch (user.restaurant_status) {
+          case 0:
+            // This shouldn't happen because API blocks login for pending accounts
+            console.log("Restaurant account pending approval");
+            break;
+          case 1:
+            console.log("Restaurant account active but not launched");
+            toast.success(
+              "Login successful! Your restaurant is not yet launched on the app."
+            );
+            break;
+          case 2:
+            console.log("Restaurant account fully launched");
+            toast.success("Login successful!");
+            break;
+          case 3:
+            // This shouldn't happen because API blocks login for banned accounts
+            console.log("Restaurant account banned");
+            break;
+          default:
+            console.log(
+              `Unexpected restaurant status: ${user.restaurant_status}`
+            );
+            toast.success("Login successful!");
+        }
+      } else {
+        toast.success("Login successful!");
+      }
+
+      setTimeout(() => {
+        login(user, navigate);
+
+        // Differentiate logging based on role
+        if (user.role === "business") {
+          console.log(
+            `🏪 Business account authenticated. Restaurant ID ${user.id}, Status: ${user.restaurant_status}`
+          );
+        } else if (user.role === "admin") {
+          console.log(
+            `👑 Admin account authenticated. Redirecting to admin dashboard.`
+          );
+        } else {
+          console.log(
+            `⚠️ Unknown role account authenticated. Check role_id mapping.`
+          );
+        }
+      }, 500);
     } catch (err) {
       console.error("Login error:", err);
 
@@ -44,10 +112,8 @@ const Login = () => {
       setIsLoading(false);
     }
   };
-
   return (
     <>
-      <Toaster position="top-center" reverseOrder={false} />
       <Navbar />
       <div className="min-h-screen flex flex-col bg-gray-50">
         <div className="flex-1 flex items-center justify-center p-4">
@@ -62,9 +128,7 @@ const Login = () => {
                 <h2 className="text-2xl font-bold text-gray-800">
                   Welcome back
                 </h2>
-                <p className="text-gray-600 mt-2">
-                  Sign in to your restaurant account
-                </p>
+                <p className="text-gray-600 mt-2">Sign in to your account</p>
               </div>
 
               {error && (
@@ -74,6 +138,12 @@ const Login = () => {
                     <p className="text-xs mt-1">
                       Our team is reviewing your application. This usually takes
                       1-2 business days.
+                    </p>
+                  )}
+                  {error.includes("suspended") && (
+                    <p className="text-xs mt-1">
+                      Your account has been suspended. Please contact support
+                      for more information.
                     </p>
                   )}
                 </div>

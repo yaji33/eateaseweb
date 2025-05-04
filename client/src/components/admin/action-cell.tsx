@@ -53,7 +53,7 @@ export const ActionsCell = ({ eatery }: { eatery: EateriesCol }) => {
         </DropdownMenuItem>
         {eatery.status === "pending" && (
           <DropdownMenuItem
-            onClick={() => handleStatusChange(eatery.id, 2)}
+            onClick={() => handleStatusChange(eatery.id, 1)}
             className="text-green-600"
           >
             Approve

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Logo from "@/assets/logo-1.png";
+//import Logo from "@/assets/logo-1.png";
 import "@/index.css";
 import Illustration from "@/assets/illustration.png";
 import Phone from "@/components/phone-input";
 import toast, { Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
-import Navbar from "@/components/public/navbar";
+import Navbar from "@/components/public/public-nav";
 
 const Registration = () => {
   const [formData, setFormData] = useState({
@@ -29,16 +29,17 @@ const Registration = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handlePhoneChange = (value) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handlePhoneChange = (value: any) => {
     setFormData((prev) => ({ ...prev, contact: value || "" }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -63,7 +64,7 @@ const Registration = () => {
         password: formData.password,
       };
 
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:5001/api/restaurants",
         registrationData
       );
@@ -71,7 +72,13 @@ const Registration = () => {
       toast.success("Registration successful!");
       navigate("/login");
     } catch (err) {
-      toast.error(err.response?.data?.error || "Something went wrong");
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.error || "Something went wrong");
+      } else if (err instanceof Error) {
+        toast.error(err.message || "Something went wrong");
+      } else {
+        toast.error("An unexpected error occurred");
+      }
     } finally {
       setLoading(false);
     }

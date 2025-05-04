@@ -3,7 +3,7 @@
 import * as React from "react";
 
 import {
-  ColumnDef,
+  //ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -34,7 +34,7 @@ import {
 import { Search } from "lucide-react";
 import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+//import { Input } from "@/components/ui/input";
 
 export function DataTable<TData, TValue>({
   columns,

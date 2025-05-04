@@ -7,7 +7,8 @@ interface LocationPickerProps {
     lng: number;
   };
   onLocationSelect: (location: { lat: number; lng: number }) => Promise<void>;
-  readOnly?: boolean; 
+  readOnly?: boolean;
+  businessName?: string;
 }
 
 const containerStyle = {
@@ -15,7 +16,10 @@ const containerStyle = {
   height: "400px",
 };
 
-const LocationPicker: React.FC<LocationPickerProps> = ({ location, businessName }) => {
+const LocationPicker: React.FC<LocationPickerProps> = ({
+  location,
+  businessName,
+}) => {
   return (
     <MapContainer center={location} zoom={15} style={containerStyle}>
       <TileLayer
@@ -42,7 +46,7 @@ export default function LocationPage() {
     lng: 123.7333,
   });
 
-  const [businessName, setBusinessName] = useState("Mac&Gab Food Hub"); 
+  const [businessName, setBusinessName] = useState("Mac&Gab Food Hub");
 
   useEffect(() => {
     // Check if geolocation is available

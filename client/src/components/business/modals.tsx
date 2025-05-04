@@ -6,11 +6,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";  
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Add from "@/assets/add.svg";
 import Selection from "@/components/business/combo-box";
 import axios from "axios";
+import { toast } from "react-hot-toast"; // Import toast
 
 interface ModalsProps {
   onItemAdded: () => void;
@@ -27,10 +28,12 @@ export default function AddMenuModal({ onItemAdded }: ModalsProps) {
     price: "",
     image: null,
     imagePreview: null,
-  });  
+  });
 
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);  
-
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false); // Controls modal visibility
 
   const fileToBase64 = (file: File): Promise<string> => {
@@ -38,12 +41,12 @@ export default function AddMenuModal({ onItemAdded }: ModalsProps) {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        const base64String = (reader.result as string).split(',')[1]; // Strip prefix
+        const base64String = (reader.result as string).split(",")[1]; // Strip prefix
         resolve(base64String);
       };
       reader.onerror = (error) => reject(error);
     });
-  };  
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMenuData({ ...menuData, [e.target.name]: e.target.value });
@@ -58,47 +61,69 @@ export default function AddMenuModal({ onItemAdded }: ModalsProps) {
         imagePreview: URL.createObjectURL(file),
       });
     }
-  };  
+  };
+
+  const resetForm = () => {
+    setMenuData({
+      title: "",
+      price: "",
+      image: null,
+      imagePreview: null,
+    });
+    setSelectedCategoryId(null);
+  };
 
   const handleSubmit = async () => {
-    if (!menuData.title || !menuData.price || !menuData.image || !selectedCategoryId) {
-      alert("Please fill out all fields.");
+    if (
+      !menuData.title ||
+      !menuData.price ||
+      !menuData.image ||
+      !selectedCategoryId
+    ) {
+      toast.error("Please fill out all fields");
       return;
     }
-  
+
     try {
+      setIsLoading(true);
       const token = localStorage.getItem("token");
       const imageBase64 = await fileToBase64(menuData.image);
-  
-      await axios.post("http://localhost:5001/api/menu", {
-        title: menuData.title,
-        price: menuData.price,
-        category_id: selectedCategoryId,
-        imageBase64: imageBase64,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+
+      await axios.post(
+        "http://localhost:5001/api/menu",
+        {
+          title: menuData.title,
+          price: menuData.price,
+          category_id: selectedCategoryId,
+          imageBase64: imageBase64,
         },
-      });
-  
-      alert("Menu item added!");
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      toast.success("Menu item added successfully!");
       onItemAdded();
       setOpen(false);
-  
-      setMenuData({
-        title: "",
-        price: "",
-        image: null,
-        imagePreview: null,
-      });
+      resetForm();
     } catch (error) {
       console.error("Error adding menu item:", error);
-      alert("Failed to add menu item.");
+      toast.error("Failed to add menu item");
+    } finally {
+      setIsLoading(false);
     }
-  };  
+  };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(newOpen) => {
+        setOpen(newOpen);
+        if (!newOpen) resetForm();
+      }}
+    >
       <DialogTrigger asChild>
         <button className="border rounded-md p-2 bg-white shadow-sm hover:bg-gray-100 transition">
           <img src={Add} alt="Add" className="w-5" />
@@ -150,14 +175,19 @@ export default function AddMenuModal({ onItemAdded }: ModalsProps) {
         </div>
 
         <div className="flex justify-end mt-4 gap-2">
-          <Button variant="outline" className="hover:bg-gray-200 transition">
+          <Button
+            variant="outline"
+            className="hover:bg-gray-200 transition"
+            onClick={() => setOpen(false)}
+          >
             Cancel
           </Button>
           <Button
             onClick={handleSubmit}
+            disabled={isLoading}
             className="bg-activeBackgroundDark text-white hover:bg-opacity-90 transition"
           >
-            Save
+            {isLoading ? "Saving..." : "Save"}
           </Button>
         </div>
       </DialogContent>

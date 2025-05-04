@@ -1,3 +1,5 @@
+import { useAuthStore } from "@/state/authStore";
+
 interface User {
   id: string;
   email: string;
@@ -5,13 +7,19 @@ interface User {
 }
 
 interface LoginResponse {
-  token: string;
+  role_id: undefined;
+  id: string;
+  name: string; 
+  email: string; 
+  restaurant_status: number; 
+  restaurant_name: string; 
+  token: string; 
   user: User;
 }
 
-interface ErrorResponse {
+{/*interface ErrorResponse {
   message?: string;
-}
+} */}
 
 export const loginUser = async (
   email: string,
@@ -43,4 +51,13 @@ export const loginUser = async (
     console.error("Login error:", error);
     throw error;
   }
+};
+
+export const logoutUser = () => {
+  // Clear all authentication data from local storage
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("role");
+  localStorage.removeItem("userId");
+  useAuthStore.getState().logout();
 };

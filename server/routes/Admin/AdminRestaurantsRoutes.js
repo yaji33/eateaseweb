@@ -13,6 +13,8 @@ router.get(
   adminMiddleware,
   async (req, res) => {
     try {
+      // Fixed projection - either include all fields we want or exclude unwanted fields
+      // Option 1: Include specific fields (FIXED)
       const restaurants = await Restaurant.find(
         {},
         {
@@ -22,10 +24,13 @@ router.get(
           contact: 1,
           email: 1,
           operating_hours: 1,
-          status: 1,
+          status: 1, // Changed from 0 to 1 to include this field
           created_at: 1,
         }
       ).sort({ created_at: -1 });
+
+      // Option 2: Alternative approach - exclude fields you don't want
+      // const restaurants = await Restaurant.find({}).select("-field_to_exclude").sort({ created_at: -1 });
 
       res.json(restaurants);
     } catch (error) {
@@ -48,13 +53,11 @@ router.put(
         return res.status(400).json({ error: "Status is required" });
       }
 
-  
       const restaurantCheck = await Restaurant.findById(id);
 
       if (!restaurantCheck) {
         return res.status(404).json({ error: "Restaurant not found" });
       }
-
 
       const restaurant = await Restaurant.findByIdAndUpdate(
         id,
@@ -77,10 +80,12 @@ router.put(
       });
 
       const statusMessage =
-        status === 1
+        status === 0
           ? "Pending"
-          : status === 2
+          : status === 1
           ? "Active"
+          : status === 2
+          ? "Launched"
           : status === 3
           ? "Banned"
           : `${status}`;

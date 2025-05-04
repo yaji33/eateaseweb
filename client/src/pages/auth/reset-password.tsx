@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "@/assets/logo.png";
 import "@/index.css";
-import axios from "axios"; // Ensure axios is imported or install it with npm/yarn
+import axios from "axios"; 
 
 const ResetPassword = () => {
   const [email, setEmail] = useState("");
@@ -34,6 +34,7 @@ const ResetPassword = () => {
           "A password reset link has been sent to your email if it exists in our system."
       );
       setEmail(""); // Clear the input after successful submission
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("Reset error:", err);
       setError(
@@ -85,8 +86,6 @@ const ResetPassword = () => {
             {isLoading ? "Sending..." : "Send Reset Link"}
           </button>
         </form>
-
-        {/* Back to Login */}
         <button
           onClick={() => navigate("/login")}
           className="text-xs text-buttonPrimary mt-6"
