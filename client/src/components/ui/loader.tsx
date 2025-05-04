@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react"; 
-import React from "react";
+//import React from "react";
 
 export function Loader({ text = "Loading..." }: { text?: string }) {
   return (
