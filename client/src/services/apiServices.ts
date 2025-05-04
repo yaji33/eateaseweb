@@ -26,9 +26,14 @@ interface EateryData {
   // Add other fields as needed
 }
 
-// Create axios instance with base URL from environment variables
+// Determine the correct API URL based on environment
+const API_URL = import.meta.env.DEV
+  ? import.meta.env.VITE_API_URL // Use localhost URL for development
+  : `https://${import.meta.env.VITE_API_BASE_URL}`; // Use HTTPS for production
+
+// Create axios instance with proper base URL
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
