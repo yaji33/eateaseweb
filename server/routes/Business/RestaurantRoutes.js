@@ -173,7 +173,7 @@ router.put("/launch", authMiddleware, businessMiddleware, async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, businessMiddleware, async (req, res) => {
   try {
     console.log("Fetching restaurants...");
     const restaurants = await Restaurant.find();
