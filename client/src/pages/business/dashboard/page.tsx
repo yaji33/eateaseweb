@@ -100,6 +100,7 @@ function RestaurantDashboard() {
   useEffect(() => {
     // Fetch restaurant profile and payment data
     Promise.all([fetchRestaurantProfile(), fetchDashboardData()]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateRange]);
 
   const fetchRestaurantProfile = async () => {

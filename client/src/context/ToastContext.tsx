@@ -1,4 +1,4 @@
-import React from "react";
+//import React from "react";
 import { Toaster, toast } from "react-hot-toast";
 
 export function ToastProvider() {
@@ -32,4 +32,5 @@ export function ToastProvider() {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { toast };

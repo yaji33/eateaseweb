@@ -12,7 +12,14 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import { useEateryStore, useModalStore } from "@/state/modalStore";
 
-const ActionsMenu = ({ rowData }) => {
+interface RowData {
+  id: string;
+  name: string;
+  owner: string;
+  status: string;
+}
+
+const ActionsMenu = ({ rowData }: { rowData: RowData }) => {
   const { openModal } = useModalStore();
   const { setEatery } = useEateryStore();
 

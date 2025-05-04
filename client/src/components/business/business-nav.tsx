@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 //import { useChat } from "@/context/ChatContext";
 import axios from "axios";
@@ -16,7 +16,7 @@ function Navbar() {
   const { user } = useAuthStore();
   //const { messages, setSelectedChat } = useChat();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [ , setIsChatOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 

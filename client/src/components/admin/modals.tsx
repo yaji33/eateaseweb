@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -33,17 +33,25 @@ interface RestaurantDetails {
   created_at: string;
 }
 
-export function Modal() {
+export const Modal: React.FC<ModalProps> = ({
+  open: propsOpen,
+  onClose,
+  ownerId,
+}) => {
   const { eateryId, open, setOpen } = useEateryStore();
   const [restaurantDetails, setRestaurantDetails] =
     useState<RestaurantDetails | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const closeModal = () => setOpen(false);
+  const closeModal = () => {
+    setOpen(false);
+    onClose();
+  };
 
   useEffect(() => {
     async function fetchDetails() {
-      if (!eateryId) return;
+      const id = eateryId || ownerId;
+      if (!id) return;
 
       setLoading(true);
       try {
@@ -64,10 +72,10 @@ export function Modal() {
       }
     }
 
-    if (open && eateryId) {
+    if ((open || propsOpen) && (eateryId || ownerId)) {
       fetchDetails();
     }
-  }, [open, eateryId]);
+  }, [open, propsOpen, eateryId, ownerId]);
 
   const getStatusText = (status: number) => {
     switch (status) {
@@ -155,4 +163,4 @@ export function Modal() {
       </DialogContent>
     </Dialog>
   );
-}
+};

@@ -34,6 +34,32 @@ interface BusinessData {
   bannerImageBase64?: string;
 }
 
+interface Restaurant {
+  id: string;
+  name: string;
+  rating: number;
+  rating_count: number;
+  business_profile: string;
+  restaurant_photo: string;
+  restaurant_description: string;
+  status: number;
+  address: {
+    street: string;
+    city: string;
+    province: string;
+    zip: string;
+    coordinates: {
+      latitude: number | null;
+      longitude: number | null;
+    };
+  };
+  contact: string;
+  operating_hours: {
+    open: string;
+    close: string;
+  };
+}
+
 interface UpdateData {
   name: string;
   business_profile: string;
@@ -59,7 +85,7 @@ interface UpdateData {
 }
 
 export default function Page() {
-  const [restaurant, setRestaurant] = useState(null);
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
   const [launchLoading, setLaunchLoading] = useState(false);
 
@@ -464,7 +490,7 @@ export default function Page() {
   };
 
   // Get status text based on status code
-  const getStatusText = (status) => {
+  const getStatusText = (status: number) => {
     switch (status) {
       case 0:
         return "Pending Approval";
@@ -478,7 +504,7 @@ export default function Page() {
   };
 
   // Get status color based on status code
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: number) => {
     switch (status) {
       case 0:
         return "text-yellow-600 bg-yellow-100";
@@ -494,7 +520,7 @@ export default function Page() {
   // Check if restaurant can be launched
   const canLaunch = () => {
     return (
-      businessData.status === 1 && 
+      businessData.status === 1 &&
       businessData.name &&
       businessData.address?.street &&
       businessData.address?.city &&

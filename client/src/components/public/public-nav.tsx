@@ -2,7 +2,6 @@ import Logo from "@/assets/logo.png";
 import "@/index.css";
 import { NavLink, useNavigate } from "react-router-dom";
 
-import React from "react";
 
 const Navbar = () => {
   const navigate = useNavigate();

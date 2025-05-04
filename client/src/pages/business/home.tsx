@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Banner from "@/assets/home-bg-img.jpg";
 import axios from "axios";
 import {
   CheckCircle,
   Circle,
   ChevronRight,
-  Clock,
+  //Clock,
   TrendingUp,
   ShoppingBag,
   Settings,
