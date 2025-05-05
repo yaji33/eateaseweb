@@ -12,6 +12,8 @@ import { useEateryStore } from "@/state/modalStore";
 import { EateriesCol } from "@/pages/admin/eateries/columns";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export const ActionsCell = ({ eatery }: { eatery: EateriesCol }) => {
   const { setOpen, setEateryId } = useEateryStore();
 
@@ -19,7 +21,7 @@ export const ActionsCell = ({ eatery }: { eatery: EateriesCol }) => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:5001/api/admin/restaurants/${id}/status`,
+        `${API_URL}/api/admin/restaurants/${id}/status`,
         { status: newStatus },
         {
           headers: {

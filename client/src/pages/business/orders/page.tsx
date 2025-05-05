@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import OrderCard from "@/components/business/OrderCard";
+import { toast } from "react-hot-toast";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -114,10 +115,10 @@ export default function Page() {
       );
 
       setOrders(updatedOrders);
-      alert("Order updated!");
+      toast.success("Order updated!");
     } catch (err) {
       console.error("Failed to update order status", err);
-      alert("Failed to update order.");
+      toast.error("Failed to update order.");
     }
   };
 

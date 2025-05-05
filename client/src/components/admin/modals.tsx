@@ -33,6 +33,8 @@ interface RestaurantDetails {
   created_at: string;
 }
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export const Modal: React.FC<ModalProps> = ({
   open: propsOpen,
   onClose,
@@ -57,7 +59,7 @@ export const Modal: React.FC<ModalProps> = ({
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:5001/api/admin/restaurants/${eateryId}`,
+          `${API_URL}/api/admin/restaurants/${eateryId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -19,7 +19,7 @@ const Navbar = () => {
         <div className="flex gap-4">
           <button
             onClick={() => navigate("/login")}
-            className=" px-4 rounded-md"
+            className=" px-4 rounded-md sm:p-2"
           >
             Login
           </button>
