@@ -13,6 +13,8 @@ import Selection from "@/components/business/combo-box";
 import axios from "axios";
 import { toast } from "react-hot-toast"; // Import toast
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 interface ModalsProps {
   onItemAdded: () => void;
 }
@@ -90,7 +92,7 @@ export default function AddMenuModal({ onItemAdded }: ModalsProps) {
       const imageBase64 = await fileToBase64(menuData.image);
 
       await axios.post(
-        "http://localhost:5001/api/menu",
+        `${API_URL}/api/menu`,
         {
           title: menuData.title,
           price: menuData.price,
