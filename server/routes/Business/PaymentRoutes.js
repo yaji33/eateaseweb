@@ -32,7 +32,6 @@ router.get("/", authMiddleware, businessMiddleware, async (req, res) => {
 
     res.json(populated);
   } catch (err) {
-    console.error("❌ Failed to fetch payments:", err.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });

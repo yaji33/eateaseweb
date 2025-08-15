@@ -36,7 +36,6 @@ router.get("/", authMiddleware, businessMiddleware, async (req, res) => {
 
     res.json(populatedOrders);
   } catch (error) {
-    console.error("❌ Failed to fetch orders:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -72,7 +71,6 @@ router.patch(
 
       res.json({ message: "Order status updated", updatedOrder });
     } catch (err) {
-      console.error("❌ Error updating order status:", err.message);
       res.status(500).json({ error: "Server error" });
     }
   }

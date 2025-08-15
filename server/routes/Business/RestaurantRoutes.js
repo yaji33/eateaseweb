@@ -28,6 +28,7 @@ router.post("/", registerLimiter, async (req, res) => {
       business_profile,
       restaurant_description,
     } = req.body;
+
     if (
       !address ||
       !address.street ||
@@ -106,21 +107,18 @@ router.post("/", registerLimiter, async (req, res) => {
 
     res.status(201).json(savedRestaurant);
   } catch (error) {
-    console.error("Error saving restaurant:", error);
     res.status(500).json({ error: error.message });
   }
 });
 
 router.put("/launch", authMiddleware, businessMiddleware, async (req, res) => {
   try {
-    // Find the restaurant associated with the logged-in business user
     const restaurant = await Restaurant.findById(req.user.business_id);
 
     if (!restaurant) {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
-    // Check if restaurant is in approved state (status = 1)
     if (restaurant.status !== 1) {
       return res.status(400).json({
         message:
@@ -128,7 +126,6 @@ router.put("/launch", authMiddleware, businessMiddleware, async (req, res) => {
       });
     }
 
-    // Verify required fields are filled
     const requiredFields = [
       "name",
       "contact",
@@ -141,7 +138,6 @@ router.put("/launch", authMiddleware, businessMiddleware, async (req, res) => {
     const missingFields = [];
 
     for (const field of requiredFields) {
-      // Handle nested fields
       if (field.includes(".")) {
         const [parent, child] = field.split(".");
         if (!restaurant[parent] || !restaurant[parent][child]) {
@@ -160,13 +156,11 @@ router.put("/launch", authMiddleware, businessMiddleware, async (req, res) => {
       });
     }
 
-    // Update restaurant status to 'Live' (status = 2)
     restaurant.status = 2;
     await restaurant.save();
 
     res.json(restaurant);
   } catch (err) {
-    console.error("❌ Failed to launch restaurant:", err.message);
     res
       .status(500)
       .json({ message: "Internal server error", error: err.message });
@@ -175,19 +169,15 @@ router.put("/launch", authMiddleware, businessMiddleware, async (req, res) => {
 
 router.get("/", authMiddleware, businessMiddleware, async (req, res) => {
   try {
-    console.log("Fetching restaurants...");
     const restaurants = await Restaurant.find();
-    console.log("Restaurants found:", restaurants);
     res.json(restaurants);
   } catch (error) {
-    console.error("Error fetching restaurants:", error);
     res.status(500).json({ error: error.message });
   }
 });
 
 router.put("/profile", authMiddleware, businessMiddleware, async (req, res) => {
   try {
-    // Get user from middleware
     const user = req.user;
 
     if (!user.business_id) {
@@ -196,14 +186,12 @@ router.put("/profile", authMiddleware, businessMiddleware, async (req, res) => {
         .json({ message: "No business associated with this account" });
     }
 
-    // Find restaurant by business_id
     const restaurant = await Restaurant.findById(user.business_id);
 
     if (!restaurant) {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
-    // Extract data from request body
     const {
       name,
       owner_name,
@@ -217,7 +205,6 @@ router.put("/profile", authMiddleware, businessMiddleware, async (req, res) => {
       bannerImageBase64,
     } = req.body;
 
-    // Update basic fields if provided
     if (name) restaurant.name = name;
     if (owner_name) restaurant.owner_name = owner_name;
     if (restaurant_description)
@@ -226,15 +213,12 @@ router.put("/profile", authMiddleware, businessMiddleware, async (req, res) => {
     if (business_profile) restaurant.business_profile = business_profile;
     if (contact) restaurant.contact = contact;
 
-    // Update address if provided
     if (address) {
-      // Only update fields that are provided
       if (address.street) restaurant.address.street = address.street;
       if (address.city) restaurant.address.city = address.city;
       if (address.province) restaurant.address.province = address.province;
       if (address.zip) restaurant.address.zip = address.zip;
 
-      // Update coordinates if provided
       if (address.coordinates) {
         restaurant.address.coordinates = {
           latitude:
@@ -247,7 +231,6 @@ router.put("/profile", authMiddleware, businessMiddleware, async (req, res) => {
       }
     }
 
-    // Update operating hours if provided
     if (operating_hours) {
       restaurant.operating_hours = {
         open: operating_hours.open || restaurant.operating_hours.open,
@@ -255,13 +238,9 @@ router.put("/profile", authMiddleware, businessMiddleware, async (req, res) => {
       };
     }
 
-    // Handle profile image upload
     if (profileImageBase64) {
       try {
-        // Convert base64 to buffer
         const buffer = Buffer.from(profileImageBase64, "base64");
-
-        // Upload to cloudinary
         const uploadPromise = new Promise((resolve, reject) => {
           const uploadStream = cloudinary.uploader.upload_stream(
             { folder: "restaurant_profiles" },
@@ -270,25 +249,18 @@ router.put("/profile", authMiddleware, businessMiddleware, async (req, res) => {
               else resolve(result);
             }
           );
-
           streamifier.createReadStream(buffer).pipe(uploadStream);
         });
-
         const result = await uploadPromise;
         restaurant.business_profile = result.secure_url;
       } catch (uploadError) {
-        console.error("Profile image upload error:", uploadError);
-        // Continue with other updates even if image upload fails
+        // silently fail for image upload
       }
     }
 
-    // Handle banner image upload
     if (bannerImageBase64) {
       try {
-        // Convert base64 to buffer
         const buffer = Buffer.from(bannerImageBase64, "base64");
-
-        // Upload to cloudinary
         const uploadPromise = new Promise((resolve, reject) => {
           const uploadStream = cloudinary.uploader.upload_stream(
             { folder: "restaurant_banners" },
@@ -297,25 +269,18 @@ router.put("/profile", authMiddleware, businessMiddleware, async (req, res) => {
               else resolve(result);
             }
           );
-
           streamifier.createReadStream(buffer).pipe(uploadStream);
         });
-
         const result = await uploadPromise;
         restaurant.restaurant_photo = result.secure_url;
       } catch (uploadError) {
-        console.error("Banner image upload error:", uploadError);
-        // Continue with other updates even if image upload fails
+        // silently fail for image upload
       }
     }
 
-    // Save updates to database
     await restaurant.save();
-
-    // Return updated restaurant data
     res.json(restaurant);
   } catch (error) {
-    console.error("Error updating restaurant profile:", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -337,7 +302,6 @@ router.get("/profile", authMiddleware, businessMiddleware, async (req, res) => {
 
     res.json(restaurant);
   } catch (error) {
-    console.error("Error fetching restaurant profile:", error);
     res.status(500).json({ error: error.message });
   }
 });

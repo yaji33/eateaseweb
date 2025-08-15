@@ -5,12 +5,9 @@ const configureSocketIO = (io) => {
   const onlineUsers = new Map();
 
   io.on("connection", (socket) => {
-    console.log("New client connected:", socket.id);
-
     // User comes online - store their socket id
     socket.on("userOnline", ({ userId }) => {
       onlineUsers.set(userId, socket.id);
-      console.log(`User ${userId} is now online with socket ${socket.id}`);
 
       // Inform others that this user is online
       socket.broadcast.emit("userStatusChange", { userId, status: "online" });
@@ -18,7 +15,6 @@ const configureSocketIO = (io) => {
 
     // Join user to their specific rooms
     socket.on("joinRooms", ({ userId, rooms }) => {
-      console.log(`User ${userId} joining rooms:`, rooms);
       if (Array.isArray(rooms)) {
         rooms.forEach((room) => {
           socket.join(room);
@@ -64,7 +60,6 @@ const configureSocketIO = (io) => {
         }
 
         if (!chat) {
-          console.error("Failed to save message to database");
           return;
         }
 
@@ -90,7 +85,6 @@ const configureSocketIO = (io) => {
           });
         }
       } catch (error) {
-        console.error("Error handling message:", error);
         socket.emit("errorEvent", { message: "Failed to send message" });
       }
     });
@@ -120,21 +114,16 @@ const configureSocketIO = (io) => {
             socket.to(chat_id).emit("messagesSeen", { chat_id, user_id });
           }
         }
-      } catch (error) {
-        console.error("Error marking messages as seen:", error);
-      }
+      } catch (error) {}
     });
 
     // Handle disconnection
     socket.on("disconnect", () => {
-      console.log("Client disconnected:", socket.id);
-
       // Find and remove the disconnected user
       for (const [userId, socketId] of onlineUsers.entries()) {
         if (socketId === socket.id) {
           onlineUsers.delete(userId);
           io.emit("userStatusChange", { userId, status: "offline" });
-          console.log(`User ${userId} is now offline`);
           break;
         }
       }
@@ -142,5 +131,4 @@ const configureSocketIO = (io) => {
   });
 };
 
-// Export the function
 module.exports = configureSocketIO;

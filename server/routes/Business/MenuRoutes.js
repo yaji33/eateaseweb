@@ -11,9 +11,6 @@ const router = express.Router();
 
 router.post("/", authMiddleware, businessMiddleware, async (req, res) => {
   try {
-    console.log("🔹 POST /api/menu called");
-    console.log("Body:", req.body);
-
     const { title, price, category_id, imageBase64 } = req.body;
 
     if (!title || !price || !category_id || !imageBase64) {
@@ -46,10 +43,8 @@ router.post("/", authMiddleware, businessMiddleware, async (req, res) => {
     });
 
     const savedItem = await newItem.save();
-    console.log("✅ Menu item saved:", savedItem);
     res.status(201).json(savedItem);
   } catch (err) {
-    console.error("❌ Error saving menu item:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -82,7 +77,6 @@ router.post(
 
       res.json({ message: "Menu items deleted successfully" });
     } catch (err) {
-      console.error("❌ Error deleting menu items:", err.message);
       res.status(500).json({ error: "Server error while deleting menu items" });
     }
   }
@@ -129,7 +123,6 @@ router.patch("/:id", authMiddleware, businessMiddleware, async (req, res) => {
 
     res.json(updatedItem);
   } catch (err) {
-    console.error("❌ Error updating menu item:", err.message);
     res.status(500).json({ error: "Server error while updating menu item" });
   }
 });
